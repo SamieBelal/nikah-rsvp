@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samie & Faizah — Our Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Allura&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3; --sage:#6E7D63; --sage-deep:#4E5A40; --sage-text:#414B36;
+    --gold:#A8854A; --gold-light:#C2A363; --ink:#36402C; --line:rgba(168,133,74,.45);
+    --green:#538d4e; --yellow:#b59f3b; --gray:#787c7e;
+    --tile-border:#d3d6da; --tile-border-fill:#878a8c;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scrollbar-width:none}
+  html::-webkit-scrollbar{display:none}
+  body{font-family:'Cormorant Garamond','Hoefler Text',Georgia,serif;color:var(--sage-text);-webkit-font-smoothing:antialiased;min-height:100vh;background:var(--paper);display:flex;flex-direction:column;align-items:center}
+
+  .header{text-align:center;padding:36px 20px 20px}
+  .header h1{font-family:'Allura',cursive;color:var(--sage-deep);font-size:clamp(2.4rem,8vw,3.6rem);font-weight:400;line-height:1;margin-bottom:6px}
+  .header p{font-size:.95rem;color:var(--sage);font-style:italic}
+
+  .divider{width:120px;height:18px;margin:16px auto 24px;display:block}
+
+  /* Player picker */
+  .name-picker{display:flex;gap:12px;margin-bottom:24px;justify-content:center}
+  .name-btn{padding:10px 28px;border:1.5px solid var(--line);background:transparent;font-family:'Cormorant Garamond',Georgia,serif;font-size:1rem;font-weight:600;color:var(--sage-text);cursor:pointer;border-radius:2px;letter-spacing:1px;transition:all .2s}
+  .name-btn.active{background:var(--sage-deep);color:var(--paper);border-color:var(--sage-deep)}
+  .name-btn:hover:not(.active){background:rgba(78,90,64,.08)}
+
+  /* Board */
+  .board-wrap{width:100%;max-width:340px;padding:0 12px}
+  .board{display:flex;flex-direction:column;gap:5px;margin:0 auto 16px;width:min(310px,88vw)}
+  .row{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+  .tile{border:2px solid var(--tile-border);display:flex;align-items:center;justify-content:center;font-size:clamp(1.4rem,5vw,1.8rem);font-weight:700;font-family:'Cormorant Garamond',serif;text-transform:uppercase;color:var(--ink);background:transparent;transition:border-color .1s;user-select:none;aspect-ratio:1}
+  .tile.filled{border-color:var(--tile-border-fill);animation:pop .1s ease}
+  .tile.correct{background:var(--green);border-color:var(--green);color:#fff}
+  .tile.present{background:var(--yellow);border-color:var(--yellow);color:#fff}
+  .tile.absent{background:var(--gray);border-color:var(--gray);color:#fff}
+
+  @keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+  .row.shake{animation:shake .4s ease}
+
+  .message{min-height:26px;text-align:center;font-style:italic;color:var(--gold);font-size:1rem;margin-bottom:10px;letter-spacing:.3px}
+
+  /* Keyboard */
+  .keyboard{display:flex;flex-direction:column;gap:6px;align-items:center;margin-bottom:24px;width:100%;max-width:500px;padding:0 8px}
+  .kb-row{display:flex;gap:5px;justify-content:center;width:100%}
+  .key{height:56px;min-width:clamp(28px,8vw,42px);padding:0 4px;border:none;border-radius:4px;background:#d3d6da;color:var(--ink);font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;cursor:pointer;text-transform:uppercase;transition:background .15s;display:flex;align-items:center;justify-content:center;flex:1}
+  .key.wide{flex:1.5;font-size:.82rem;letter-spacing:.5px}
+  .key.correct{background:var(--green);color:#fff}
+  .key.present{background:var(--yellow);color:#fff}
+  .key.absent{background:var(--gray);color:#fff}
+
+  /* Play again */
+  .play-again-wrap{text-align:center;margin-bottom:24px;display:none}
+  .play-again{background:var(--sage-deep);color:var(--paper);border:none;padding:14px 32px;font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;text-transform:uppercase;letter-spacing:3px;border-radius:2px;cursor:pointer;transition:background .2s,transform .2s;box-shadow:0 8px 20px -8px rgba(54,64,44,.7)}
+  .play-again:hover{background:#3d4733;transform:translateY(-2px)}
+
+  /* Leaderboard */
+  .lb-wrap{width:100%;max-width:420px;padding:0 20px 60px}
+  .lb-title{text-align:center;font-size:.9rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);font-weight:600;margin-bottom:16px}
+  .lb-table{width:100%;border-collapse:collapse;font-size:.95rem}
+  .lb-table th{text-align:left;color:var(--sage);font-style:italic;font-weight:400;padding:6px 8px;border-bottom:1px solid var(--line)}
+  .lb-table td{padding:8px 8px;border-bottom:1px solid rgba(168,133,74,.15);color:var(--ink)}
+  .lb-table td:nth-child(3),.lb-table th:nth-child(3){text-align:center}
+  .lb-table td:nth-child(4),.lb-table th:nth-child(4){text-align:right;color:var(--sage);font-size:.85rem}
+  .lb-empty{text-align:center;color:var(--sage);font-style:italic;font-size:.95rem;padding:20px}
+  .chip{display:inline-block;padding:2px 10px;border-radius:10px;font-weight:700;font-size:.88rem}
+  .chip.win{background:rgba(83,141,78,.15);color:var(--green)}
+  .chip.loss{background:rgba(120,124,126,.15);color:var(--gray)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Just Us</h1>
+  <p>Our words. Our game.</p>
+</div>
+
+<svg class="divider" viewBox="0 0 120 18" fill="none">
+  <path d="M6 9 H46" stroke="#A8854A" stroke-width="1"/>
+  <path d="M74 9 H114" stroke="#A8854A" stroke-width="1"/>
+  <path d="M60 2 C56 6 56 12 60 16 C64 12 64 6 60 2Z" fill="#A8854A"/>
+  <circle cx="52" cy="9" r="1.5" fill="#A8854A"/>
+  <circle cx="68" cy="9" r="1.5" fill="#A8854A"/>
+</svg>
+
+<div class="name-picker">
+  <button class="name-btn" id="btnSamie" onclick="selectPlayer('Samie')">Samie</button>
+  <button class="name-btn" id="btnFaizah" onclick="selectPlayer('Faizah')">Faizah</button>
+</div>
+
+<div class="board-wrap">
+  <div class="board" id="board"></div>
+  <div class="message" id="message"></div>
+</div>
+
+<div class="keyboard" id="keyboard">
+  <div class="kb-row" id="kb0"></div>
+  <div class="kb-row" id="kb1"></div>
+  <div class="kb-row" id="kb2"></div>
+</div>
+
+<div class="play-again-wrap" id="playAgainWrap">
+  <button class="play-again" onclick="nextRound()">Play Again</button>
+</div>
+
+<div class="lb-wrap">
+  <div class="lb-title">Leaderboard</div>
+  <table class="lb-table">
+    <thead><tr><th>Player</th><th>Word</th><th>Score</th><th>When</th></tr></thead>
+    <tbody id="lbBody"></tbody>
+  </table>
+  <div class="lb-empty" id="lbEmpty">No rounds played yet</div>
+</div>
+
+<script>
+const WORDS = [
+  'SAMIE','HONEY','LOVED','LIGHT','SWEET',
+  'SMILE','SLEEP','NIGHT','PEACE','BIRDS',
+  'BLOOM','CRISP','SNACK','SPICY','COMFY',
+  'SILLY','MATCH','BLESS','SUGAR','WATCH',
+  'CRAFT','PERKY','KHAIR','SHWAM','CRANE',
+  'DREAM','NIKAH','ALLAH','DUNYA','HALAL'
+];
+
+const ROWS = 6, COLS = 5;
+let player = null;
+let answer = '';
+let currentRow = 0;
+let currentCol = 0;
+let gameOver = false;
+let tiles = [];
+let keyMap = {};
+
+/* ---- player ---- */
+function selectPlayer(name) {
+  player = name;
+  document.getElementById('btnSamie').classList.toggle('active', name === 'Samie');
+  document.getElementById('btnFaizah').classList.toggle('active', name === 'Faizah');
+  startGame();
+}
+
+/* ---- word selection ---- */
+function getUsedWords() {
+  return new Set(JSON.parse(localStorage.getItem('usUsedWords') || '[]'));
+}
+function markUsed(word) {
+  const used = getUsedWords();
+  used.add(word);
+  // reset if all used
+  if (used.size >= WORDS.length) {
+    localStorage.setItem('usUsedWords', '[]');
+  } else {
+    localStorage.setItem('usUsedWords', JSON.stringify([...used]));
+  }
+}
+function pickWord() {
+  const used = getUsedWords();
+  const remaining = WORDS.filter(w => !used.has(w));
+  const pool = remaining.length ? remaining : WORDS;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+/* ---- board ---- */
+function buildBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+  tiles = [];
+  for (let r = 0; r < ROWS; r++) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.id = 'row' + r;
+    const rowTiles = [];
+    for (let c = 0; c < COLS; c++) {
+      const t = document.createElement('div');
+      t.className = 'tile';
+      row.appendChild(t);
+      rowTiles.push(t);
+    }
+    board.appendChild(row);
+    tiles.push(rowTiles);
+  }
+}
+
+/* ---- keyboard ---- */
+const KB_ROWS = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['ENTER','Z','X','C','V','B','N','M','⌫']
+];
+function buildKeyboard() {
+  keyMap = {};
+  KB_ROWS.forEach((row, i) => {
+    const el = document.getElementById('kb' + i);
+    el.innerHTML = '';
+    row.forEach(k => {
+      const btn = document.createElement('button');
+      const isWide = k === 'ENTER' || k === '⌫';
+      btn.className = 'key' + (isWide ? ' wide' : '');
+      btn.textContent = k;
+      btn.dataset.key = k;
+      btn.onclick = () => handleKey(k === '⌫' ? 'BACKSPACE' : k);
+      el.appendChild(btn);
+      keyMap[k] = btn;
+    });
+  });
+}
+
+/* ---- start ---- */
+function startGame() {
+  answer = pickWord();
+  currentRow = 0; currentCol = 0; gameOver = false;
+  document.getElementById('message').textContent = '';
+  document.getElementById('playAgainWrap').style.display = 'none';
+  buildBoard();
+  buildKeyboard();
+}
+
+function nextRound() {
+  if (!player) { setMsg('Choose a player first'); return; }
+  startGame();
+}
+
+/* ---- input ---- */
+document.addEventListener('keydown', e => {
+  if (!player || gameOver) return;
+  if (e.key === 'Enter') handleKey('ENTER');
+  else if (e.key === 'Backspace') handleKey('BACKSPACE');
+  else if (/^[a-zA-Z]$/.test(e.key)) handleKey(e.key.toUpperCase());
+});
+
+function handleKey(k) {
+  if (!player) { setMsg('Choose a player first'); return; }
+  if (gameOver) return;
+  if (k === 'BACKSPACE') {
+    if (currentCol > 0) {
+      currentCol--;
+      tiles[currentRow][currentCol].textContent = '';
+      tiles[currentRow][currentCol].classList.remove('filled');
+    }
+    return;
+  }
+  if (k === 'ENTER') { submitGuess(); return; }
+  if (currentCol < COLS) {
+    tiles[currentRow][currentCol].textContent = k;
+    tiles[currentRow][currentCol].classList.add('filled');
+    currentCol++;
+  }
+}
+
+/* ---- evaluate ---- */
+function evaluate(guess, answer) {
+  const result = Array(COLS).fill('absent');
+  const ansArr = answer.split('');
+  const guessArr = guess.split('');
+  guessArr.forEach((l, i) => {
+    if (l === ansArr[i]) { result[i] = 'correct'; ansArr[i] = null; guessArr[i] = null; }
+  });
+  guessArr.forEach((l, i) => {
+    if (l === null) return;
+    const j = ansArr.indexOf(l);
+    if (j >= 0) { result[i] = 'present'; ansArr[j] = null; }
+  });
+  return result;
+}
+
+function submitGuess() {
+  if (currentCol < COLS) { shakeRow(currentRow); setMsg('Not enough letters'); return; }
+  const guess = tiles[currentRow].map(t => t.textContent).join('');
+
+  const result = evaluate(guess, answer);
+  revealRow(currentRow, result, () => {
+    // update keyboard colors
+    result.forEach((r, i) => {
+      const letter = guess[i];
+      const btn = keyMap[letter];
+      if (!btn) return;
+      const priority = { correct: 3, present: 2, absent: 1 };
+      const cur = priority[btn.dataset.state || ''] || 0;
+      if (priority[r] > cur) {
+        btn.dataset.state = r;
+        const isWide = btn.classList.contains('wide');
+        btn.className = 'key' + (isWide ? ' wide' : '') + ' ' + r;
+      }
+    });
+
+    if (guess === answer) {
+      const guesses = currentRow + 1;
+      saveResult(player, answer, guesses, true);
+      markUsed(answer);
+      const msgs = ['Incredible! 🌙', 'Mashallah!', 'Well done', 'Nice one', 'Got there!', 'Phew!'];
+      setMsg(msgs[guesses - 1] || 'Got it!');
+      gameOver = true;
+      document.getElementById('playAgainWrap').style.display = 'block';
+      renderLeaderboard();
+    } else {
+      currentRow++;
+      currentCol = 0;
+      if (currentRow === ROWS) {
+        saveResult(player, answer, 0, false);
+        markUsed(answer);
+        setMsg(answer);
+        gameOver = true;
+        document.getElementById('playAgainWrap').style.display = 'block';
+        renderLeaderboard();
+      }
+    }
+  });
+}
+
+/* ---- reveal animation ---- */
+function revealRow(row, result, cb) {
+  const DELAY = 300;
+  result.forEach((r, i) => {
+    const t = tiles[row][i];
+    setTimeout(() => {
+      t.style.transition = 'transform 0.25s ease';
+      t.style.transform = 'rotateX(90deg)';
+      setTimeout(() => {
+        t.classList.add(r);
+        t.style.transform = 'rotateX(0deg)';
+      }, 250);
+    }, i * DELAY);
+  });
+  setTimeout(cb, COLS * DELAY + 350);
+}
+
+function shakeRow(row) {
+  const r = document.getElementById('row' + row);
+  r.classList.add('shake');
+  setTimeout(() => r.classList.remove('shake'), 400);
+}
+
+function setMsg(txt) {
+  document.getElementById('message').textContent = txt;
+  if (txt && !gameOver) {
+    setTimeout(() => {
+      if (document.getElementById('message').textContent === txt) {
+        document.getElementById('message').textContent = '';
+      }
+    }, 2000);
+  }
+}
+
+/* ---- leaderboard ---- */
+function saveResult(player, word, guesses, won) {
+  const history = JSON.parse(localStorage.getItem('usGameHistory') || '[]');
+  history.unshift({ player, word, guesses: won ? guesses : 'X', won, ts: Date.now() });
+  localStorage.setItem('usGameHistory', JSON.stringify(history));
+}
+
+function renderLeaderboard() {
+  const history = JSON.parse(localStorage.getItem('usGameHistory') || '[]');
+  const body = document.getElementById('lbBody');
+  const empty = document.getElementById('lbEmpty');
+  body.innerHTML = '';
+  if (!history.length) { empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  history.slice(0, 20).forEach(r => {
+    const tr = document.createElement('tr');
+    const chip = r.won
+      ? `<span class="chip win">${r.guesses}/6</span>`
+      : `<span class="chip loss">X/6</span>`;
+    tr.innerHTML = `<td>${r.player}</td><td>${r.word}</td><td>${chip}</td><td>${timeAgo(r.ts)}</td>`;
+    body.appendChild(tr);
+  });
+}
+
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 60) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+
+/* ---- init ---- */
+buildBoard();
+buildKeyboard();
+renderLeaderboard();
+</script>
+</body>
+</html>
