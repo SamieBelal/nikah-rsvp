@@ -182,8 +182,8 @@ fileInput.addEventListener('change', async () => {
 });
 
 /* ---- session uploads (for delete ownership) ---- */
-const myUploads = new Set(JSON.parse(sessionStorage.getItem('myUploads') || '[]'));
-function saveMyUploads(){ sessionStorage.setItem('myUploads', JSON.stringify([...myUploads])); }
+const myUploads = new Set(JSON.parse(localStorage.getItem('myUploads') || '[]'));
+function saveMyUploads(){ localStorage.setItem('myUploads', JSON.stringify([...myUploads])); }
 
 async function deletePhoto(filename, item){
   if(!confirm('Remove this photo?')) return;
