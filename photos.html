@@ -181,11 +181,14 @@ fileInput.addEventListener('change', async () => {
 let knownFiles = new Set();
 
 async function loadPhotos(){
-  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${BUCKET}?limit=500&sortBy=created_at&order=desc`, {
+  const res = await fetch(`${SUPABASE_URL}/storage/v1/object/list/${BUCKET}`, {
+    method: 'POST',
     headers: {
       'apikey': SUPABASE_ANON_KEY,
       'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
-    }
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ limit: 500, offset: 0, sortBy: { column: 'created_at', order: 'desc' } })
   });
   if(!res.ok) return;
   const files = await res.json();
