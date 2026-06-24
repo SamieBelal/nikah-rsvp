@@ -239,7 +239,15 @@ async function loadPhotos(){
     item.className = 'grid-item';
     const isOwn = myUploads.has(f.name);
     item.innerHTML = `<img src="${url}" alt="Wedding photo" loading="lazy">${isOwn ? `<button class="delete-btn" title="Remove photo">🗑 Remove</button>` : ''}`;
-    item.querySelector('img').onclick = () => openLightbox(url);
+    const img = item.querySelector('img');
+    img.onerror = () => {
+      item.remove();
+      knownFiles.delete(f.name);
+      const count = document.querySelectorAll('.grid-item').length;
+      document.getElementById('count').textContent = count ? `${count} photo${count===1?'':'s'} shared` : '';
+      if(!count) document.getElementById('emptyState').style.display = 'block';
+    };
+    img.onclick = () => openLightbox(url);
     if(isOwn) item.querySelector('.delete-btn').onclick = (e) => { e.stopPropagation(); deletePhoto(f.name, item); };
     grid.insertBefore(item, grid.firstChild);
   });
