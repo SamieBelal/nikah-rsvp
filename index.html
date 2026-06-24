@@ -260,6 +260,185 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   else{document.getElementById('confirmTitle').textContent='You’ll Be Missed';document.getElementById('confirmMsg').textContent='Thank you for letting us know, '+name+'. You’ll be in our duas.';}
 });
 
+
+/* ============ GUESTBOOK CANVAS ============ */
+(function(){
+  const GB_URL = 'https://byvjwxnhcqjhkuqofenv.supabase.co';
+  const GB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
+
+  /* --- styles --- */
+  const style = document.createElement('style');
+  style.textContent = `
+    #gb-icon{position:fixed;bottom:22px;left:22px;width:36px;height:36px;cursor:pointer;opacity:.15;transition:opacity .3s;z-index:50;user-select:none}
+    #gb-icon:hover{opacity:.65}
+    #gb-overlay{position:fixed;inset:0;background:rgba(30,26,20,0);z-index:200;display:none;align-items:center;justify-content:center;transition:background .35s}
+    #gb-overlay.open{display:flex;background:rgba(30,26,20,.91)}
+    #gb-modal{background:#FBF8F3;border-radius:6px;padding:26px 22px 18px;width:min(500px,95vw);display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+    #gb-modal h2{font-family:'Allura',cursive;color:#4E5A40;font-size:2rem;font-weight:400;text-align:center;line-height:1.1}
+    #gb-modal p{font-family:'Cormorant Garamond',serif;font-style:italic;color:#6E7D63;font-size:.93rem;text-align:center}
+    #gb-name{width:100%;padding:11px 13px;border:1.5px solid rgba(168,133,74,.4);border-radius:2px;font-family:'Cormorant Garamond',serif;font-size:1rem;color:#36402C;background:#fff;outline:none;box-sizing:border-box}
+    #gb-name:focus{border-color:#A8854A}
+    #gb-open-btn{background:#4E5A40;color:#FBF8F3;border:none;padding:12px;border-radius:2px;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:600;text-transform:uppercase;letter-spacing:3px;cursor:pointer}
+    #gb-open-btn:hover{background:#3d4733}
+    #gb-canvas-wrap{display:none;flex-direction:column;gap:10px}
+    #gb-canvas{border-radius:4px;background:#fff;cursor:crosshair;touch-action:none;width:100%;border:1.5px solid rgba(168,133,74,.25)}
+    #gb-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .gbc{width:26px;height:26px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s}
+    .gbc.sel{border-color:#36402C}
+    .gbs{width:32px;height:32px;border-radius:50%;background:#e8e4dd;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .gbs.sel{background:#4E5A40}
+    .gbs span{background:#36402C;border-radius:50%;display:block;pointer-events:none}
+    .gbs.sel span{background:#FBF8F3}
+    #gb-eraser,#gb-clear{padding:4px 12px;border-radius:14px;border:1px solid rgba(168,133,74,.35);font-family:'Cormorant Garamond',serif;font-size:.87rem;cursor:pointer;color:#6E7D63;background:#e8e4dd;letter-spacing:.4px}
+    #gb-eraser.sel{background:#4E5A40;color:#FBF8F3;border-color:#4E5A40}
+    #gb-clear{background:transparent}
+    #gb-actions{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+    #gb-save{background:#4E5A40;color:#FBF8F3;border:none;padding:10px 22px;border-radius:2px;font-family:'Cormorant Garamond',serif;font-size:.9rem;font-weight:600;text-transform:uppercase;letter-spacing:3px;cursor:pointer}
+    #gb-save:hover{background:#3d4733}
+    #gb-save:disabled{opacity:.5;cursor:default}
+    #gb-cancel{background:transparent;border:none;color:#6E7D63;font-family:'Cormorant Garamond',serif;font-size:.9rem;cursor:pointer;padding:10px 10px}
+    #gb-status{font-family:'Cormorant Garamond',serif;font-style:italic;color:#A8854A;font-size:.9rem;text-align:center;min-height:18px}
+  `;
+  document.head.appendChild(style);
+
+  /* --- icon --- */
+  const icon = document.createElement('div');
+  icon.id = 'gb-icon';
+  icon.innerHTML = '<svg viewBox="0 0 38 38" fill="none"><path d="M8 30 Q10 26 14 24 L28 10 Q30 8 32 10 Q34 12 32 14 L18 28 Q16 32 12 34 Q8 36 6 34 Q4 32 8 30Z" stroke="#A8854A" stroke-width="1.8" fill="none"/><circle cx="12" cy="30" r="3" fill="#A8854A" opacity=".6"/></svg>';
+  document.body.appendChild(icon);
+
+  /* --- overlay HTML --- */
+  const COLORS = ['#36402C','#A8854A','#6E7D63','#C49898','#4A6A8A','#1a1a1a'];
+  const SIZES  = [4, 8, 14];
+
+  const overlay = document.createElement('div');
+  overlay.id = 'gb-overlay';
+  overlay.innerHTML =
+    '<div id="gb-modal">' +
+      '<h2>Leave Your Mark</h2>' +
+      '<p>Faizah loves arts & crafts — doodle something for the couple</p>' +
+      '<input id="gb-name" type="text" placeholder="Your name" maxlength="40" autocomplete="off">' +
+      '<button id="gb-open-btn">Open Canvas</button>' +
+      '<div id="gb-canvas-wrap">' +
+        '<canvas id="gb-canvas" height="270"></canvas>' +
+        '<div id="gb-tools">' +
+          COLORS.map((c,i)=>'<div class="gbc'+(i===0?' sel':'')+'" data-c="'+c+'" style="background:'+c+'"></div>').join('') +
+          '<div style="width:1px;height:22px;background:rgba(168,133,74,.3);margin:0 2px"></div>' +
+          SIZES.map((s,i)=>'<button class="gbs'+(i===0?' sel':'')+'" data-s="'+s+'"><span style="width:'+s+'px;height:'+s+'px"></span></button>').join('') +
+          '<button id="gb-eraser">Eraser</button>' +
+          '<button id="gb-clear">Clear</button>' +
+        '</div>' +
+        '<div id="gb-actions">' +
+          '<button id="gb-cancel">Cancel</button>' +
+          '<button id="gb-save">Save Drawing</button>' +
+        '</div>' +
+        '<div id="gb-status"></div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  /* --- state --- */
+  let painting=false, color=COLORS[0], size=SIZES[0], erasing=false, lx=0, ly=0, guestName='';
+
+  function cv(){ return document.getElementById('gb-canvas'); }
+  function cx(){ return cv().getContext('2d'); }
+
+  function open(){
+    overlay.classList.add('open');
+    document.getElementById('gb-name').value='';
+    document.getElementById('gb-canvas-wrap').style.display='none';
+    document.getElementById('gb-open-btn').style.display='';
+    document.getElementById('gb-status').textContent='';
+    document.querySelectorAll('.gbc').forEach((el,i)=>el.classList.toggle('sel',i===0));
+    document.querySelectorAll('.gbs').forEach((el,i)=>el.classList.toggle('sel',i===0));
+    document.getElementById('gb-eraser').classList.remove('sel');
+    color=COLORS[0]; size=SIZES[0]; erasing=false;
+    setTimeout(()=>document.getElementById('gb-name').focus(),100);
+  }
+  function close(){ overlay.classList.remove('open'); }
+
+  icon.addEventListener('click', open);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) close(); });
+
+  document.getElementById('gb-open-btn').addEventListener('click',()=>{
+    guestName = document.getElementById('gb-name').value.trim();
+    if(!guestName){ document.getElementById('gb-name').focus(); return; }
+    document.getElementById('gb-open-btn').style.display='none';
+    const wrap = document.getElementById('gb-canvas-wrap');
+    wrap.style.display='flex';
+    const c = cv();
+    const dpr = window.devicePixelRatio||1;
+    c.width = c.offsetWidth * dpr;
+    c.height = 270 * dpr;
+    c.style.height = '270px';
+    const ctx2 = cx();
+    ctx2.scale(dpr,dpr);
+    ctx2.fillStyle='#ffffff';
+    ctx2.fillRect(0,0,c.width,c.height);
+    bindCanvas();
+  });
+
+  function getXY(e){
+    const r=cv().getBoundingClientRect();
+    const s=e.touches?e.touches[0]:e;
+    return [s.clientX-r.left, s.clientY-r.top];
+  }
+  function bindCanvas(){
+    const c=cv();
+    function draw(e){
+      const [x,y]=getXY(e);
+      const ctx2=cx();
+      ctx2.beginPath(); ctx2.moveTo(lx,ly); ctx2.lineTo(x,y);
+      ctx2.strokeStyle=erasing?'#ffffff':color;
+      ctx2.lineWidth=erasing?size*3.5:size;
+      ctx2.lineCap='round'; ctx2.lineJoin='round';
+      ctx2.stroke();
+      [lx,ly]=[x,y];
+    }
+    c.addEventListener('mousedown',e=>{e.preventDefault();painting=true;[lx,ly]=getXY(e);draw(e);});
+    c.addEventListener('mousemove',e=>{if(painting){e.preventDefault();draw(e);}});
+    c.addEventListener('mouseup',()=>painting=false);
+    c.addEventListener('mouseleave',()=>painting=false);
+    c.addEventListener('touchstart',e=>{e.preventDefault();painting=true;[lx,ly]=getXY(e);draw(e);},{passive:false});
+    c.addEventListener('touchmove',e=>{e.preventDefault();if(painting)draw(e);},{passive:false});
+    c.addEventListener('touchend',()=>painting=false);
+  }
+
+  document.getElementById('gb-modal').addEventListener('click',e=>{
+    const t=e.target;
+    if(t.classList.contains('gbc')){
+      document.querySelectorAll('.gbc').forEach(el=>el.classList.remove('sel'));
+      t.classList.add('sel'); color=t.dataset.c; erasing=false;
+      document.getElementById('gb-eraser').classList.remove('sel');
+    }
+    const sBtn=t.classList.contains('gbs')?t:t.closest('.gbs');
+    if(sBtn){ document.querySelectorAll('.gbs').forEach(el=>el.classList.remove('sel')); sBtn.classList.add('sel'); size=parseInt(sBtn.dataset.s); }
+    if(t.id==='gb-eraser'){ erasing=!erasing; t.classList.toggle('sel',erasing); }
+    if(t.id==='gb-clear'){ const c2=cv(); const ctx2=cx(); ctx2.fillStyle='#ffffff'; ctx2.fillRect(0,0,c2.width/(window.devicePixelRatio||1),c2.height/(window.devicePixelRatio||1)); }
+    if(t.id==='gb-cancel') close();
+  });
+
+  document.getElementById('gb-save').addEventListener('click', async()=>{
+    const dataUrl=cv().toDataURL('image/png');
+    const btn=document.getElementById('gb-save');
+    const status=document.getElementById('gb-status');
+    btn.disabled=true; status.textContent='Saving…';
+    try{
+      const res=await fetch(GB_URL+'/rest/v1/drawings',{
+        method:'POST',
+        headers:{'apikey':GB_KEY,'Authorization':'Bearer '+GB_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+        body:JSON.stringify({guest_name:guestName,drawing:dataUrl})
+      });
+      if(!res.ok) throw new Error();
+      status.textContent='Saved! Thank you, '+guestName+' ✨';
+      setTimeout(close,1800);
+    }catch(e){
+      status.textContent='Something went wrong. Please try again.';
+      btn.disabled=false;
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
