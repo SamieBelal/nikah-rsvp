@@ -95,7 +95,7 @@
 </div>
 
 <div class="grid" id="grid">
-  <div class="empty-state" id="emptyState">Photos will appear here as guests share them</div>
+  <div class="empty-state" id="emptyState" style="display:none">Photos will appear here as guests share them</div>
 </div>
 
 <div class="lightbox" id="lightbox">
@@ -245,7 +245,7 @@ async function loadPhotos(){
       knownFiles.delete(f.name);
       const count = document.querySelectorAll('.grid-item').length;
       document.getElementById('count').textContent = count ? `${count} photo${count===1?'':'s'} shared` : '';
-      if(!count) document.getElementById('emptyState').style.display = 'block';
+      if(!count){ document.getElementById('emptyState').style.display = 'block'; document.getElementById('count').textContent = ''; }
     };
     img.onclick = () => openLightbox(url);
     if(isOwn) item.querySelector('.delete-btn').onclick = (e) => { e.stopPropagation(); deletePhoto(f.name, item); };
