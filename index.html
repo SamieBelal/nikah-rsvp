@@ -202,8 +202,8 @@
 function goForm(){document.getElementById('page1').classList.remove('active');document.getElementById('page2').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function goInvite(){document.getElementById('page2').classList.remove('active');document.getElementById('page1').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 /* ===== SUPABASE CONFIG — paste your two values from Settings -> API ===== */
-const SUPABASE_URL='https://YOUR-PROJECT-REF.supabase.co';
-const SUPABASE_ANON_KEY='YOUR-ANON-PUBLIC-KEY';
+const SUPABASE_URL='https://byvjwxnhcqjhkuqofenv.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
 /* ======================================================================= */
 async function saveRSVP(entry){
   const res=await fetch(SUPABASE_URL+'/rest/v1/rsvps',{
