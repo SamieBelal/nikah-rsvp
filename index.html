@@ -269,8 +269,7 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   /* --- styles --- */
   const style = document.createElement('style');
   style.textContent = `
-    #gb-icon{position:fixed;bottom:22px;left:22px;width:36px;height:36px;cursor:pointer;opacity:.15;transition:opacity .3s;z-index:50;user-select:none}
-    #gb-icon:hover{opacity:.65}
+
     #gb-overlay{position:fixed;inset:0;background:rgba(30,26,20,0);z-index:200;display:none;align-items:center;justify-content:center;transition:background .35s}
     #gb-overlay.open{display:flex;background:rgba(30,26,20,.91)}
     #gb-modal{background:#FBF8F3;border-radius:6px;padding:26px 22px 18px;width:min(500px,95vw);display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
@@ -301,11 +300,8 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   `;
   document.head.appendChild(style);
 
-  /* --- icon --- */
-  const icon = document.createElement('div');
-  icon.id = 'gb-icon';
-  icon.innerHTML = '<svg viewBox="0 0 38 38" fill="none"><path d="M8 30 Q10 26 14 24 L28 10 Q30 8 32 10 Q34 12 32 14 L18 28 Q16 32 12 34 Q8 36 6 34 Q4 32 8 30Z" stroke="#A8854A" stroke-width="1.8" fill="none"/><circle cx="12" cy="30" r="3" fill="#A8854A" opacity=".6"/></svg>';
-  document.body.appendChild(icon);
+  /* --- long press on names image --- */
+  const icon = null; // no icon, triggered by long press
 
   /* --- overlay HTML --- */
   const COLORS = ['#36402C','#A8854A','#6E7D63','#C49898','#4A6A8A','#1a1a1a'];
@@ -357,7 +353,24 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   }
   function close(){ overlay.classList.remove('open'); }
 
-  icon.addEventListener('click', open);
+  // long press on the names image (2s)
+  let pressTimer = null;
+  function bindLongPress(){
+    const img = document.querySelector('.title-img');
+    if(!img){ setTimeout(bindLongPress, 300); return; }
+    function startPress(e){ pressTimer = setTimeout(()=>{ e.preventDefault(); open(); }, 2000); }
+    function cancelPress(){ clearTimeout(pressTimer); }
+    img.addEventListener('mousedown', startPress);
+    img.addEventListener('touchstart', startPress, {passive:true});
+    img.addEventListener('mouseup', cancelPress);
+    img.addEventListener('mouseleave', cancelPress);
+    img.addEventListener('touchend', cancelPress);
+    img.addEventListener('touchcancel', cancelPress);
+    img.style.webkitUserSelect='none';
+    img.style.userSelect='none';
+    img.addEventListener('contextmenu', e=>e.preventDefault());
+  }
+  bindLongPress();
   overlay.addEventListener('click', e=>{ if(e.target===overlay) close(); });
 
   document.getElementById('gb-open-btn').addEventListener('click',()=>{
