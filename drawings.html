@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guest Drawings — Samie & Faizah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Allura&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3; --sage:#6E7D63; --sage-deep:#4E5A40; --sage-text:#414B36;
+    --gold:#A8854A; --line:rgba(168,133,74,.45); --ink:#36402C;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scrollbar-width:none}
+  html::-webkit-scrollbar{display:none}
+  body{font-family:'Cormorant Garamond','Hoefler Text',Georgia,serif;color:var(--sage-text);background:var(--paper);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+  .header{text-align:center;padding:48px 20px 28px}
+  .header h1{font-family:'Allura',cursive;color:var(--sage-deep);font-size:clamp(2.4rem,8vw,3.6rem);font-weight:400;line-height:1;margin-bottom:8px}
+  .header p{font-size:.95rem;color:var(--sage);font-style:italic}
+  .count{font-size:.85rem;color:var(--sage);font-style:italic;margin-top:4px}
+
+  .divider{width:120px;height:18px;margin:16px auto 36px;display:block}
+
+  .grid{columns:2;column-gap:16px;padding:0 16px 60px;max-width:900px;margin:0 auto}
+  @media(min-width:560px){.grid{columns:3}}
+  @media(min-width:800px){.grid{columns:4}}
+
+  .card{break-inside:avoid;margin-bottom:16px;background:#fff;border-radius:4px;box-shadow:0 2px 12px rgba(54,64,44,.08);overflow:hidden;border:1px solid rgba(168,133,74,.15)}
+  .card img{width:100%;display:block}
+  .card-name{padding:8px 10px;font-size:.88rem;font-style:italic;color:var(--sage);border-top:1px solid rgba(168,133,74,.12);display:flex;justify-content:space-between;align-items:center}
+  .card-name span{color:var(--ink);font-weight:500;font-style:normal}
+  .dl-btn{background:none;border:none;cursor:pointer;color:var(--gold);font-size:.82rem;font-family:'Cormorant Garamond',serif;font-style:italic;text-decoration:underline;padding:0}
+  .dl-btn:hover{color:var(--sage-deep)}
+
+  .empty{text-align:center;padding:80px 20px;color:var(--sage);font-style:italic;font-size:1.1rem}
+  .loading{text-align:center;padding:80px 20px;color:var(--sage);font-style:italic}
+
+  .dl-all-wrap{text-align:center;margin-bottom:32px}
+  .dl-all{background:var(--sage-deep);color:var(--paper);border:none;padding:13px 28px;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:600;text-transform:uppercase;letter-spacing:3px;border-radius:2px;cursor:pointer;box-shadow:0 8px 20px -8px rgba(54,64,44,.7);transition:background .2s}
+  .dl-all:hover{background:#3d4733}
+  .dl-all:disabled{opacity:.5;cursor:default}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Guest Drawings</h1>
+  <p>Doodles from our celebration</p>
+  <div class="count" id="count"></div>
+</div>
+
+<svg class="divider" viewBox="0 0 120 18" fill="none">
+  <path d="M6 9 H46" stroke="#A8854A" stroke-width="1"/>
+  <path d="M74 9 H114" stroke="#A8854A" stroke-width="1"/>
+  <path d="M60 2 C56 6 56 12 60 16 C64 12 64 6 60 2Z" fill="#A8854A"/>
+  <circle cx="52" cy="9" r="1.5" fill="#A8854A"/>
+  <circle cx="68" cy="9" r="1.5" fill="#A8854A"/>
+</svg>
+
+<div class="dl-all-wrap" id="dlAllWrap" style="display:none">
+  <button class="dl-all" id="dlAllBtn" onclick="downloadAll()">Download All Drawings</button>
+</div>
+
+<div class="grid" id="grid">
+  <div class="loading" id="loading">Loading drawings…</div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://byvjwxnhcqjhkuqofenv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
+
+let allDrawings = [];
+
+async function loadDrawings(){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/drawings?select=id,guest_name,drawing,created_at&order=created_at.asc`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY
+    }
+  });
+  if(!res.ok){ document.getElementById('loading').textContent = 'Could not load drawings.'; return; }
+  const data = await res.json();
+  allDrawings = data;
+
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+
+  if(!data.length){
+    grid.innerHTML = '<div class="empty">No drawings yet — be the first!</div>';
+    return;
+  }
+
+  document.getElementById('count').textContent = `${data.length} drawing${data.length===1?'':'s'}`;
+  document.getElementById('dlAllWrap').style.display = 'block';
+
+  data.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const date = new Date(d.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    card.innerHTML = `
+      <img src="${d.drawing}" alt="Drawing by ${d.guest_name}">
+      <div class="card-name">
+        <span>${d.guest_name}</span>
+        <button class="dl-btn" onclick="downloadOne('${d.id}','${d.guest_name.replace(/'/g,"\\'")}')">Download</button>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function downloadOne(id, name){
+  const d = allDrawings.find(x => x.id === id);
+  if(!d) return;
+  const a = document.createElement('a');
+  a.href = d.drawing;
+  a.download = `drawing-${name.replace(/\s+/g,'-').toLowerCase()}.png`;
+  a.click();
+}
+
+async function downloadAll(){
+  const btn = document.getElementById('dlAllBtn');
+  btn.disabled = true;
+  btn.textContent = 'Downloading…';
+  for(let i = 0; i < allDrawings.length; i++){
+    const d = allDrawings[i];
+    await new Promise(r => setTimeout(r, 300));
+    const a = document.createElement('a');
+    a.href = d.drawing;
+    a.download = `drawing-${String(i+1).padStart(2,'0')}-${d.guest_name.replace(/\s+/g,'-').toLowerCase()}.png`;
+    a.click();
+  }
+  btn.disabled = false;
+  btn.textContent = 'Download All Drawings';
+}
+
+loadDrawings();
+</script>
+</body>
+</html>
