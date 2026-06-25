@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Garden — Samie & Faizah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Allura&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF8F3; --sage:#6E7D63; --sage-deep:#4E5A40; --sage-text:#414B36;
+    --gold:#A8854A; --line:rgba(168,133,74,.45); --ink:#36402C;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scrollbar-width:none}
+  html::-webkit-scrollbar{display:none}
+  body{font-family:'Cormorant Garamond','Hoefler Text',Georgia,serif;color:var(--sage-text);background:var(--paper);min-height:100vh;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;align-items:center}
+
+  .header{text-align:center;padding:44px 20px 20px}
+  .header h1{font-family:'Allura',cursive;color:var(--sage-deep);font-size:clamp(2.4rem,8vw,3.6rem);font-weight:400;line-height:1;margin-bottom:6px}
+  .header p{font-size:.95rem;color:var(--sage);font-style:italic}
+
+  .divider{width:120px;height:18px;margin:14px auto 28px;display:block}
+
+  /* Plant picker */
+  .picker-wrap{width:100%;max-width:480px;padding:0 20px;margin-bottom:28px}
+  .picker-label{font-size:.88rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);font-weight:600;text-align:center;margin-bottom:14px}
+  .name-row{display:flex;gap:10px;margin-bottom:14px}
+  .name-input{flex:1;padding:11px 13px;border:1.5px solid var(--line);border-radius:2px;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--ink);background:#fff;outline:none}
+  .name-input:focus{border-color:var(--gold)}
+  .plants-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+  .plant-opt{border:2px solid transparent;border-radius:8px;padding:10px 0;cursor:pointer;text-align:center;font-size:1.8rem;background:#fff;box-shadow:0 2px 8px rgba(54,64,44,.07);transition:all .18s;line-height:1}
+  .plant-opt .plant-name{font-size:.62rem;color:var(--sage);font-family:'Cormorant Garamond',serif;margin-top:4px;display:block;font-style:italic}
+  .plant-opt.sel{border-color:var(--gold);background:#FDF5E8}
+  .plant-opt:hover:not(.sel){border-color:var(--line)}
+  .plant-btn{width:100%;background:var(--sage-deep);color:var(--paper);border:none;padding:13px;border-radius:2px;font-family:'Cormorant Garamond',serif;font-size:.92rem;font-weight:600;text-transform:uppercase;letter-spacing:3px;cursor:pointer;transition:background .2s;box-shadow:0 8px 20px -8px rgba(54,64,44,.7)}
+  .plant-btn:hover{background:#3d4733}
+  .plant-btn:disabled{opacity:.5;cursor:default}
+  .pick-status{text-align:center;font-style:italic;color:var(--gold);font-size:.9rem;min-height:18px;margin-top:8px}
+
+  /* Garden */
+  .garden-wrap{width:100%;max-width:700px;padding:0 16px 16px}
+  .garden-count{text-align:center;font-size:.85rem;color:var(--sage);font-style:italic;margin-bottom:12px}
+  .garden-field{width:100%;height:min(480px,70vw);border-radius:8px;position:relative;overflow:hidden;background:linear-gradient(to bottom, #c8e6c9 0%, #a5d6a7 18%, #81c784 18%, #6daf70 24%, #5a9e5e 24%, #7a5c38 24.5%, #8B6914 25%, #9c7a2a 26%, #7a5c38 28%, #6B4F2A 100%);box-shadow:0 4px 24px rgba(54,64,44,.15);cursor:crosshair}
+  /* sky stars */
+  .garden-field::before{content:'';position:absolute;inset:0 0 76% 0;background:radial-gradient(ellipse at 20% 40%,rgba(255,255,255,.6) 1px,transparent 1px),radial-gradient(ellipse at 60% 20%,rgba(255,255,255,.5) 1px,transparent 1px),radial-gradient(ellipse at 80% 60%,rgba(255,255,255,.4) 1px,transparent 1px),radial-gradient(ellipse at 40% 70%,rgba(255,255,255,.3) 1px,transparent 1px);pointer-events:none}
+  /* sun */
+  .garden-field::after{content:'☀️';position:absolute;top:6%;right:8%;font-size:1.8rem;pointer-events:none;filter:drop-shadow(0 0 8px rgba(255,220,50,.6))}
+
+  .planted{position:absolute;transform:translate(-50%,-100%);text-align:center;cursor:pointer;animation:growIn .4s cubic-bezier(.34,1.56,.64,1) both;user-select:none;z-index:2}
+  .planted .emoji{font-size:clamp(1.6rem,4vw,2.2rem);display:block;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.15))}
+  .planted .pname{font-size:.58rem;color:#fff;font-family:'Cormorant Garamond',serif;font-style:italic;background:rgba(0,0,0,.35);padding:1px 5px;border-radius:8px;white-space:nowrap;margin-top:2px;display:block;max-width:70px;overflow:hidden;text-overflow:ellipsis}
+  @keyframes growIn{from{transform:translate(-50%,-80%) scale(.3);opacity:0}to{transform:translate(-50%,-100%) scale(1);opacity:1}}
+
+  /* tooltip */
+  .tooltip{position:fixed;background:rgba(54,64,44,.88);color:#FBF8F3;padding:5px 12px;border-radius:12px;font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;pointer-events:none;z-index:100;white-space:nowrap;display:none}
+
+  .back-link{margin-top:20px;margin-bottom:40px;font-style:italic;color:var(--sage);font-size:.95rem;text-decoration:none;letter-spacing:.3px}
+  .back-link:hover{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Our Garden</h1>
+  <p>Plant something for Samie & Faizah</p>
+</div>
+
+<svg class="divider" viewBox="0 0 120 18" fill="none">
+  <path d="M6 9 H46" stroke="#A8854A" stroke-width="1"/>
+  <path d="M74 9 H114" stroke="#A8854A" stroke-width="1"/>
+  <path d="M60 2 C56 6 56 12 60 16 C64 12 64 6 60 2Z" fill="#A8854A"/>
+  <circle cx="52" cy="9" r="1.5" fill="#A8854A"/>
+  <circle cx="68" cy="9" r="1.5" fill="#A8854A"/>
+</svg>
+
+<!-- Picker -->
+<div class="picker-wrap">
+  <div class="picker-label">Choose your plant</div>
+  <input class="name-input" id="guestName" type="text" placeholder="Your name" maxlength="30" autocomplete="off">
+  <div class="plants-grid" id="plantsGrid"></div>
+  <button class="plant-btn" id="plantBtn" disabled>Place in Garden</button>
+  <div class="pick-status" id="pickStatus"></div>
+</div>
+
+<!-- Garden field -->
+<div class="garden-wrap">
+  <div class="garden-count" id="gardenCount"></div>
+  <div class="garden-field" id="gardenField"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<a href="/" class="back-link">← Back to Invitation</a>
+
+<script>
+const SUPABASE_URL = 'https://byvjwxnhcqjhkuqofenv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
+
+const PLANTS = [
+  { emoji: '🌹', name: 'Rose' },
+  { emoji: '🌻', name: 'Sunflower' },
+  { emoji: '🌸', name: 'Blossom' },
+  { emoji: '🌿', name: 'Herb' },
+  { emoji: '🌙', name: 'Moon' },
+  { emoji: '🍀', name: 'Clover' },
+];
+
+let selectedPlant = null;
+let hasPlanted = localStorage.getItem('gardenPlanted') === 'true';
+
+/* ---- build plant picker ---- */
+const grid = document.getElementById('plantsGrid');
+PLANTS.forEach((p, i) => {
+  const div = document.createElement('div');
+  div.className = 'plant-opt';
+  div.innerHTML = `<span>${p.emoji}</span><span class="plant-name">${p.name}</span>`;
+  div.addEventListener('click', () => {
+    document.querySelectorAll('.plant-opt').forEach(el => el.classList.remove('sel'));
+    div.classList.add('sel');
+    selectedPlant = p;
+    checkReady();
+  });
+  grid.appendChild(div);
+});
+
+document.getElementById('guestName').addEventListener('input', checkReady);
+
+function checkReady() {
+  const name = document.getElementById('guestName').value.trim();
+  document.getElementById('plantBtn').disabled = !(name && selectedPlant);
+}
+
+/* ---- place plant ---- */
+document.getElementById('plantBtn').addEventListener('click', async () => {
+  const name = document.getElementById('guestName').value.trim();
+  if (!name || !selectedPlant) return;
+
+  const field = document.getElementById('gardenField');
+  const fw = field.offsetWidth, fh = field.offsetHeight;
+
+  // keep plants in the grass/ground zone: x 5-95%, y 22-90% of field height
+  const xPct = 5 + Math.random() * 90;
+  const yPct = 22 + Math.random() * 65;
+
+  const btn = document.getElementById('plantBtn');
+  btn.disabled = true;
+  document.getElementById('pickStatus').textContent = 'Planting…';
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/garden_plants`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({ guest_name: name, plant_emoji: selectedPlant.emoji, plant_name: selectedPlant.name, x_pct: xPct, y_pct: yPct })
+    });
+    if (!res.ok) throw new Error();
+    const [row] = await res.json();
+    renderPlant(row, field);
+    localStorage.setItem('gardenPlanted', 'true');
+    localStorage.setItem('gardenName', name);
+    document.getElementById('pickStatus').textContent = 'Planted! Thank you ' + name + ' \uD83C\uDF31';
+    updateCount();
+    // hide picker after planting
+    setTimeout(() => {
+      document.querySelector('.picker-wrap').style.display = 'none';
+    }, 1800);
+  } catch(e) {
+    document.getElementById('pickStatus').textContent = 'Something went wrong. Try again.';
+    btn.disabled = false;
+  }
+});
+
+/* ---- render a plant on the field ---- */
+function renderPlant(p, field) {
+  field = field || document.getElementById('gardenField');
+  const el = document.createElement('div');
+  el.className = 'planted';
+  el.style.left = p.x_pct + '%';
+  el.style.top = p.y_pct + '%';
+  el.innerHTML = `<span class="emoji">${p.plant_emoji}</span><span class="pname">${p.guest_name}</span>`;
+
+  // tooltip on hover/tap
+  const tip = document.getElementById('tooltip');
+  function showTip(e) {
+    tip.textContent = p.guest_name + ' planted a ' + p.plant_name;
+    tip.style.display = 'block';
+    tip.style.left = (e.clientX || (e.touches&&e.touches[0].clientX)||0) + 14 + 'px';
+    tip.style.top = (e.clientY || (e.touches&&e.touches[0].clientY)||0) - 10 + 'px';
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  el.addEventListener('mouseenter', showTip);
+  el.addEventListener('mousemove', showTip);
+  el.addEventListener('mouseleave', hideTip);
+  el.addEventListener('touchstart', showTip, {passive:true});
+  el.addEventListener('touchend', hideTip);
+
+  field.appendChild(el);
+}
+
+/* ---- load all plants ---- */
+async function loadPlants() {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/garden_plants?select=*&order=created_at.asc`, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+  });
+  if (!res.ok) return;
+  const plants = await res.json();
+  const field = document.getElementById('gardenField');
+  plants.forEach(p => renderPlant(p, field));
+  updateCount(plants.length);
+
+  // if already planted, hide picker
+  if (hasPlanted) {
+    document.querySelector('.picker-wrap').style.display = 'none';
+    const savedName = localStorage.getItem('gardenName');
+    if (savedName) {
+      document.getElementById('pickStatus').textContent = 'You already planted, ' + savedName + ' \uD83C\uDF31';
+      document.querySelector('.picker-wrap').style.display = 'block';
+      document.getElementById('plantBtn').style.display = 'none';
+      document.getElementById('guestName').disabled = true;
+      document.querySelectorAll('.plant-opt').forEach(el => el.style.pointerEvents = 'none');
+    }
+  }
+}
+
+function updateCount(n) {
+  const count = n !== undefined ? n : document.querySelectorAll('.planted').length;
+  document.getElementById('gardenCount').textContent = count ? `${count} plant${count===1?'':'s'} growing` : '';
+}
+
+loadPlants();
+</script>
+</body>
+</html>
