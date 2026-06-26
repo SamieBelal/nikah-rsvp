@@ -20,136 +20,73 @@
   .header{text-align:center;padding:44px 20px 16px}
   .header h1{font-family:'Allura',cursive;color:var(--sage-deep);font-size:clamp(2.4rem,8vw,3.6rem);font-weight:400;line-height:1;margin-bottom:6px}
   .header p{font-size:.95rem;color:var(--sage);font-style:italic}
-
   .divider{width:120px;height:18px;margin:14px auto 24px;display:block}
 
   /* Picker */
-  .picker-wrap{width:100%;max-width:460px;padding:0 20px;margin-bottom:24px}
+  .picker-wrap{width:100%;max-width:500px;padding:0 20px;margin-bottom:24px}
   .picker-label{font-size:.82rem;text-transform:uppercase;letter-spacing:3px;color:var(--gold);font-weight:600;text-align:center;margin-bottom:12px}
   .name-input{width:100%;padding:11px 13px;border:1.5px solid var(--line);border-radius:2px;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--ink);background:#fff;outline:none;margin-bottom:12px}
   .name-input:focus{border-color:var(--gold)}
+
+  /* Section picker */
+  .section-label{font-size:.78rem;text-transform:uppercase;letter-spacing:2px;color:var(--sage);font-weight:600;text-align:center;margin-bottom:10px}
+  .sections-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+  .section-opt{border:1.5px solid transparent;border-radius:8px;padding:10px 6px;cursor:pointer;text-align:center;background:#fff;box-shadow:0 1px 6px rgba(54,64,44,.07);transition:all .18s}
+  .section-opt .s-icon{font-size:1.4rem;display:block;line-height:1;margin-bottom:4px}
+  .section-opt .s-name{font-size:.7rem;color:var(--sage-text);font-family:'Cormorant Garamond',serif;font-style:italic;display:block;line-height:1.2}
+  .section-opt.sel{border-color:var(--gold);background:#FDF5E8;box-shadow:0 2px 12px rgba(168,133,74,.2)}
+  .section-opt:hover:not(.sel){border-color:var(--line)}
+
+  /* Plant picker */
   .plants-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
   .plant-opt{border:1.5px solid transparent;border-radius:10px;padding:10px 0;cursor:pointer;text-align:center;font-size:1.7rem;background:#fff;box-shadow:0 1px 6px rgba(54,64,44,.07);transition:all .18s;line-height:1}
   .plant-opt .plant-name{font-size:.6rem;color:var(--sage);font-family:'Cormorant Garamond',serif;margin-top:3px;display:block;font-style:italic}
   .plant-opt.sel{border-color:var(--gold);background:#FDF5E8;box-shadow:0 2px 12px rgba(168,133,74,.2)}
   .plant-opt:hover:not(.sel){border-color:var(--line)}
+
   .plant-btn{width:100%;background:var(--sage-deep);color:var(--paper);border:none;padding:13px;border-radius:2px;font-family:'Cormorant Garamond',serif;font-size:.9rem;font-weight:600;text-transform:uppercase;letter-spacing:3px;cursor:pointer;transition:background .2s;box-shadow:0 8px 20px -8px rgba(54,64,44,.7)}
   .plant-btn:hover{background:#3d4733}
   .plant-btn:disabled{opacity:.45;cursor:default}
   .pick-status{text-align:center;font-style:italic;color:var(--gold);font-size:.9rem;min-height:18px;margin-top:8px}
 
-  /* Garden */
+  /* Section tabs */
+  .tabs-wrap{width:100%;max-width:680px;padding:0 16px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none}
+  .tabs-wrap::-webkit-scrollbar{display:none}
+  .tabs{display:flex;gap:6px;min-width:max-content}
+  .tab{border:1.5px solid var(--line);background:transparent;padding:7px 14px;border-radius:20px;font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;color:var(--sage);cursor:pointer;transition:all .2s;white-space:nowrap}
+  .tab.active{background:var(--sage-deep);color:var(--paper);border-color:var(--sage-deep)}
+  .tab:hover:not(.active){background:rgba(78,90,64,.08)}
+
+  /* Garden field */
   .garden-wrap{width:100%;max-width:680px;padding:0 16px 16px}
-  .garden-count{text-align:center;font-size:.82rem;color:var(--sage);font-style:italic;margin-bottom:10px;letter-spacing:.3px}
-
+  .garden-count{text-align:center;font-size:.82rem;color:var(--sage);font-style:italic;margin-bottom:8px}
   .garden-field{
-    width:100%;
-    height:min(440px,68vw);
-    border-radius:12px;
-    position:relative;
-    overflow:hidden;
+    width:100%;height:min(420px,65vw);
+    border-radius:12px;position:relative;overflow:hidden;
     box-shadow:0 8px 40px rgba(54,64,44,.18);
-    /* warm dusk sky */
-    background:linear-gradient(
-      to bottom,
-      #f5e6d0 0%,
-      #f0d4b0 18%,
-      #e8c99a 30%,
-      #d4a574 38%,
-      /* rolling hill starts at 38% */
-      #8faa7a 38%,
-      #7a9668 45%,
-      #6b8a5a 55%,
-      #5a7a4a 70%,
-      #4e6e40 100%
-    );
+    transition:background 0.6s ease;
   }
-
-  /* Soft gradient overlay for depth */
   .garden-field::before{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:
-      radial-gradient(ellipse at 15% 20%, rgba(255,220,150,.25) 0%, transparent 50%),
-      radial-gradient(ellipse at 85% 15%, rgba(255,200,120,.15) 0%, transparent 40%),
-      linear-gradient(to bottom, transparent 45%, rgba(54,64,44,.12) 100%);
-    pointer-events:none;
-    z-index:1;
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse at 20% 15%,rgba(255,220,150,.2) 0%,transparent 50%),
+               linear-gradient(to bottom,transparent 40%,rgba(54,64,44,.1) 100%);
+    pointer-events:none;z-index:1;
   }
 
-  /* Crescent moon */
-  .garden-field::after{
-    content:'🌙';
-    position:absolute;
-    top:5%;
-    left:8%;
-    font-size:1.4rem;
-    opacity:.7;
-    pointer-events:none;
-    z-index:2;
-    filter:drop-shadow(0 0 6px rgba(255,220,100,.4));
-  }
-
-  /* Stars */
-  .star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:.6;pointer-events:none;z-index:2}
-
-  /* Hill SVG overlay */
+  /* Hill SVG */
   .hill-svg{position:absolute;bottom:0;left:0;width:100%;pointer-events:none;z-index:3}
 
-  .planted{
-    position:absolute;
-    transform:translate(-50%, -100%);
-    text-align:center;
-    cursor:pointer;
-    animation:growIn .5s cubic-bezier(.34,1.56,.64,1) both;
-    user-select:none;
-    z-index:4;
-  }
-  .planted .emoji{
-    font-size:clamp(1.4rem,3.5vw,2rem);
-    display:block;
-    line-height:1;
-    filter:drop-shadow(0 2px 6px rgba(0,0,0,.2));
-  }
-  .planted .pname{
-    font-size:.55rem;
-    color:#fff;
-    font-family:'Cormorant Garamond',serif;
-    font-style:italic;
-    background:rgba(54,64,44,.55);
-    backdrop-filter:blur(4px);
-    padding:2px 7px;
-    border-radius:10px;
-    white-space:nowrap;
-    margin-top:3px;
-    display:block;
-    max-width:72px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    border:1px solid rgba(255,255,255,.15);
-  }
-  @keyframes growIn{
-    from{transform:translate(-50%,-80%) scale(.2);opacity:0}
-    to{transform:translate(-50%,-100%) scale(1);opacity:1}
-  }
+  /* Accent elements */
+  .accent{position:absolute;pointer-events:none;z-index:2;font-size:1.3rem}
+  .star-dot{position:absolute;background:#fff;border-radius:50%;pointer-events:none;z-index:2}
 
-  /* Tooltip */
-  .tooltip{
-    position:fixed;
-    background:rgba(54,64,44,.9);
-    color:#FBF8F3;
-    padding:5px 13px;
-    border-radius:12px;
-    font-family:'Cormorant Garamond',serif;
-    font-size:.88rem;
-    font-style:italic;
-    pointer-events:none;
-    z-index:200;
-    white-space:nowrap;
-    display:none;
-    box-shadow:0 4px 12px rgba(0,0,0,.2);
-  }
+  /* Plants */
+  .planted{position:absolute;transform:translate(-50%,-100%);text-align:center;cursor:pointer;animation:growIn .5s cubic-bezier(.34,1.56,.64,1) both;user-select:none;z-index:4}
+  .planted .emoji{font-size:clamp(1.3rem,3.2vw,1.9rem);display:block;line-height:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))}
+  .planted .pname{font-size:.55rem;color:#fff;font-family:'Cormorant Garamond',serif;font-style:italic;background:rgba(54,64,44,.55);backdrop-filter:blur(4px);padding:2px 7px;border-radius:10px;white-space:nowrap;margin-top:3px;display:block;max-width:72px;overflow:hidden;text-overflow:ellipsis;border:1px solid rgba(255,255,255,.15)}
+  @keyframes growIn{from{transform:translate(-50%,-80%) scale(.2);opacity:0}to{transform:translate(-50%,-100%) scale(1);opacity:1}}
+
+  .tooltip{position:fixed;background:rgba(54,64,44,.9);color:#FBF8F3;padding:5px 13px;border-radius:12px;font-family:'Cormorant Garamond',serif;font-size:.88rem;font-style:italic;pointer-events:none;z-index:200;white-space:nowrap;display:none;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 
   .back-link{margin-top:24px;margin-bottom:48px;font-style:italic;color:var(--sage);font-size:.95rem;text-decoration:none;letter-spacing:.3px}
   .back-link:hover{color:var(--gold)}
@@ -170,23 +107,28 @@
   <circle cx="68" cy="9" r="1.5" fill="#A8854A"/>
 </svg>
 
-<div class="picker-wrap">
-  <div class="picker-label">Choose your plant</div>
+<div class="picker-wrap" id="pickerWrap">
+  <div class="picker-label">Leave your mark</div>
   <input class="name-input" id="guestName" type="text" placeholder="Your name" maxlength="30" autocomplete="off">
+
+  <div class="section-label">Choose a spot</div>
+  <div class="sections-grid" id="sectionsGrid"></div>
+
+  <div class="picker-label" style="margin-top:4px">Choose a plant</div>
   <div class="plants-grid" id="plantsGrid"></div>
+
   <button class="plant-btn" id="plantBtn" disabled>Place in Garden</button>
   <div class="pick-status" id="pickStatus"></div>
 </div>
 
+<!-- Section tabs -->
+<div class="tabs-wrap">
+  <div class="tabs" id="tabs"></div>
+</div>
+
 <div class="garden-wrap">
   <div class="garden-count" id="gardenCount"></div>
-  <div class="garden-field" id="gardenField">
-    <!-- rolling hill SVG -->
-    <svg class="hill-svg" viewBox="0 0 700 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 40 Q100 20 200 35 Q320 50 420 25 Q520 10 700 30 L700 80 L0 80 Z" fill="#4e6e40" opacity=".5"/>
-      <path d="M0 55 Q150 35 280 48 Q400 60 500 38 Q600 22 700 45 L700 80 L0 80 Z" fill="#3d5a32" opacity=".4"/>
-    </svg>
-  </div>
+  <div class="garden-field" id="gardenField"></div>
 </div>
 
 <div class="tooltip" id="tooltip"></div>
@@ -195,6 +137,100 @@
 <script>
 const SUPABASE_URL = 'https://byvjwxnhcqjhkuqofenv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
+
+const SECTIONS = [
+  {
+    id: 'riverwalk',
+    name: 'River Walk',
+    icon: '🌊',
+    sky: 'linear-gradient(to bottom,#c8e8f5 0%,#a8d4e8 30%,#88c0d8 45%,#6aad7a 45%,#5a9868 55%,#4a8858 70%,#3a7848 100%)',
+    hill: '#3a7848',
+    hill2: '#2d6038',
+    accents: ['🦆','💧','🌾'],
+    accentPos: [{top:'10%',right:'12%'},{top:'38%',left:'20%'},{top:'42%',right:'30%'}]
+  },
+  {
+    id: 'trail',
+    name: 'The Trail',
+    icon: '🌲',
+    sky: 'linear-gradient(to bottom,#d4e8c2 0%,#b8d4a0 25%,#9cc080 38%,#7a9e5a 38%,#6a8e4a 50%,#5a7e3a 65%,#4a6e2a 100%)',
+    hill: '#4a6e2a',
+    hill2: '#3a5e20',
+    accents: ['🌲','🍂','🌿'],
+    accentPos: [{top:'5%',left:'15%'},{top:'8%',right:'20%'},{top:'35%',left:'8%'}]
+  },
+  {
+    id: 'cranbrook',
+    name: 'Cranbrook',
+    icon: '🌉',
+    sky: 'linear-gradient(to bottom,#e8d8c0 0%,#d4c0a0 28%,#c0a880 40%,#7a9868 40%,#6a8858 52%,#5a7848 68%,#4a6838 100%)',
+    hill: '#4a6838',
+    hill2: '#3a5828',
+    accents: ['🌉','🦢','🍁'],
+    accentPos: [{top:'15%',left:'35%'},{top:'36%',left:'55%'},{top:'8%',right:'15%'}]
+  },
+  {
+    id: 'cafe',
+    name: 'Shwamie Café',
+    icon: '☕',
+    sky: 'linear-gradient(to bottom,#f5e6d0 0%,#e8d0b0 25%,#d4b888 38%,#b89060 38%,#a07848 50%,#8a6038 65%,#744828 100%)',
+    hill: '#744828',
+    hill2: '#5a3818',
+    accents: ['☕','🥐','🕯️'],
+    accentPos: [{top:'8%',right:'10%'},{top:'32%',left:'12%'},{top:'10%',left:'20%'}]
+  },
+  {
+    id: 'stars',
+    name: 'Under the Stars',
+    icon: '✨',
+    sky: 'linear-gradient(to bottom,#0a0a1e 0%,#141430 30%,#1e1e44 42%,#2a3828 42%,#1e2c1e 55%,#141e14 70%,#0a140a 100%)',
+    hill: '#0a140a',
+    hill2: '#060e06',
+    accents: ['🌙','⭐','✨'],
+    accentPos: [{top:'5%',left:'10%'},{top:'12%',right:'15%'},{top:'20%',left:'50%'}],
+    night: true
+  },
+  {
+    id: 'lighthouse',
+    name: 'Lighthouse',
+    icon: '🏮',
+    sky: 'linear-gradient(to bottom,#b8d8f0 0%,#90c0e0 22%,#68a8d0 38%,#5a9870 38%,#4a8860 52%,#3a7850 68%,#2a6840 100%)',
+    hill: '#2a6840',
+    hill2: '#1a5830',
+    accents: ['🏮','🌊','⚓'],
+    accentPos: [{top:'5%',right:'18%'},{top:'35%',left:'8%'},{top:'10%',left:'25%'}]
+  },
+  {
+    id: 'botanical',
+    name: 'Botanical Garden',
+    icon: '🌺',
+    sky: 'linear-gradient(to bottom,#d4ecd4 0%,#b8dab8 25%,#9cc89c 38%,#78b878 38%,#60a860 52%,#489848 68%,#308830 100%)',
+    hill: '#308830',
+    hill2: '#207820',
+    accents: ['🌺','🦋','🌸'],
+    accentPos: [{top:'6%',left:'18%'},{top:'15%',right:'22%'},{top:'34%',left:'40%'}]
+  },
+  {
+    id: 'museum',
+    name: 'Art Museum',
+    icon: '🖼️',
+    sky: 'linear-gradient(to bottom,#e8e0d8 0%,#d8c8b8 25%,#c8b098 38%,#8a8070 38%,#787060 52%,#686050 68%,#585040 100%)',
+    hill: '#585040',
+    hill2: '#484030',
+    accents: ['🖼️','🎨','✏️'],
+    accentPos: [{top:'8%',right:'12%'},{top:'14%',left:'22%'},{top:'30%',right:'35%'}]
+  },
+  {
+    id: 'pizza',
+    name: 'Pizza Shop',
+    icon: '🍕',
+    sky: 'linear-gradient(to bottom,#f0d8b8 0%,#e0c0a0 25%,#d0a880 38%,#a06840 38%,#885028 52%,#703818 68%,#582808 100%)',
+    hill: '#582808',
+    hill2: '#401800',
+    accents: ['🍕','🫙','🧄'],
+    accentPos: [{top:'6%',left:'15%'},{top:'10%',right:'18%'},{top:'28%',left:'45%'}]
+  },
+];
 
 const PLANTS = [
   { emoji: '🌹', name: 'Rose' },
@@ -206,24 +242,28 @@ const PLANTS = [
 ];
 
 let selectedPlant = null;
+let selectedSection = null;
+let activeSection = SECTIONS[0].id;
+let allPlants = [];
 let hasPlanted = localStorage.getItem('gardenPlanted') === 'true';
 
-/* ---- add stars ---- */
-(function(){
-  const field = document.getElementById('gardenField');
-  for(let i=0;i<18;i++){
-    const s = document.createElement('div');
-    s.className = 'star';
-    s.style.left = (Math.random()*90+5)+'%';
-    s.style.top = (Math.random()*32+2)+'%';
-    s.style.opacity = (Math.random()*.5+.2).toFixed(2);
-    s.style.width = s.style.height = (Math.random()*2+1)+'px';
-    field.appendChild(s);
-  }
-})();
+/* ---- build section picker ---- */
+const sGrid = document.getElementById('sectionsGrid');
+SECTIONS.forEach(s => {
+  const div = document.createElement('div');
+  div.className = 'section-opt';
+  div.innerHTML = `<span class="s-icon">${s.icon}</span><span class="s-name">${s.name}</span>`;
+  div.addEventListener('click', () => {
+    document.querySelectorAll('.section-opt').forEach(el => el.classList.remove('sel'));
+    div.classList.add('sel');
+    selectedSection = s;
+    checkReady();
+  });
+  sGrid.appendChild(div);
+});
 
-/* ---- plant picker ---- */
-const grid = document.getElementById('plantsGrid');
+/* ---- build plant picker ---- */
+const pGrid = document.getElementById('plantsGrid');
 PLANTS.forEach(p => {
   const div = document.createElement('div');
   div.className = 'plant-opt';
@@ -234,21 +274,140 @@ PLANTS.forEach(p => {
     selectedPlant = p;
     checkReady();
   });
-  grid.appendChild(div);
+  pGrid.appendChild(div);
 });
 
 document.getElementById('guestName').addEventListener('input', checkReady);
 function checkReady(){
   const name = document.getElementById('guestName').value.trim();
-  document.getElementById('plantBtn').disabled = !(name && selectedPlant);
+  document.getElementById('plantBtn').disabled = !(name && selectedPlant && selectedSection);
+}
+
+/* ---- build tabs ---- */
+function buildTabs(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = '';
+  SECTIONS.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'tab' + (s.id === activeSection ? ' active' : '');
+    btn.textContent = s.icon + ' ' + s.name;
+    btn.addEventListener('click', () => {
+      activeSection = s.id;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      renderSection(s.id);
+    });
+    tabsEl.appendChild(btn);
+  });
+}
+
+/* ---- render section ---- */
+function renderSection(sectionId){
+  const s = SECTIONS.find(x => x.id === sectionId);
+  if(!s) return;
+  const field = document.getElementById('gardenField');
+
+  // clear existing plants and accents (keep hill svg)
+  field.querySelectorAll('.planted,.accent,.star-dot').forEach(el => el.remove());
+
+  // set background
+  field.style.background = s.sky;
+
+  // rebuild hill svg
+  let hillSvg = field.querySelector('.hill-svg');
+  if(hillSvg) hillSvg.remove();
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('class','hill-svg');
+  svg.setAttribute('viewBox','0 0 700 80');
+  svg.setAttribute('preserveAspectRatio','none');
+  svg.innerHTML = `
+    <path d="M0 40 Q100 20 200 35 Q320 50 420 25 Q520 10 700 30 L700 80 L0 80 Z" fill="${s.hill}" opacity=".55"/>
+    <path d="M0 55 Q150 35 280 48 Q400 60 500 38 Q600 22 700 45 L700 80 L0 80 Z" fill="${s.hill2}" opacity=".45"/>
+  `;
+  field.appendChild(svg);
+
+  // add accents
+  s.accents.forEach((emoji, i) => {
+    const pos = s.accentPos[i];
+    const el = document.createElement('div');
+    el.className = 'accent';
+    Object.assign(el.style, pos);
+    el.textContent = emoji;
+    el.style.opacity = '0.7';
+    el.style.filter = 'drop-shadow(0 2px 4px rgba(0,0,0,.15))';
+    field.appendChild(el);
+  });
+
+  // add stars for night section
+  if(s.night){
+    for(let i=0;i<30;i++){
+      const star = document.createElement('div');
+      star.className = 'star-dot';
+      star.style.left = (Math.random()*95+2)+'%';
+      star.style.top = (Math.random()*38+2)+'%';
+      star.style.opacity = (Math.random()*.8+.2).toFixed(2);
+      const sz = (Math.random()*2.5+1).toFixed(1)+'px';
+      star.style.width = star.style.height = sz;
+      field.appendChild(star);
+    }
+  } else {
+    // subtle stars in sky area
+    for(let i=0;i<8;i++){
+      const star = document.createElement('div');
+      star.className = 'star-dot';
+      star.style.left = (Math.random()*90+5)+'%';
+      star.style.top = (Math.random()*28+2)+'%';
+      star.style.opacity = (Math.random()*.3+.1).toFixed(2);
+      const sz = (Math.random()*1.5+1).toFixed(1)+'px';
+      star.style.width = star.style.height = sz;
+      field.appendChild(star);
+    }
+  }
+
+  // render plants for this section
+  const sectionPlants = allPlants.filter(p => p.section_id === sectionId);
+  sectionPlants.forEach(p => renderPlant(p, false));
+
+  // update count
+  document.getElementById('gardenCount').textContent = sectionPlants.length
+    ? `${sectionPlants.length} plant${sectionPlants.length===1?'':'s'} in ${s.name}`
+    : `No plants in ${s.name} yet — be the first!`;
+}
+
+/* ---- render single plant ---- */
+function renderPlant(p, animate=true){
+  if(p.section_id !== activeSection) return;
+  const field = document.getElementById('gardenField');
+  const el = document.createElement('div');
+  el.className = 'planted';
+  if(!animate) el.style.animation = 'none';
+  el.style.left = p.x_pct + '%';
+  el.style.top = p.y_pct + '%';
+  el.innerHTML = `<span class="emoji">${p.plant_emoji}</span><span class="pname">${p.guest_name}</span>`;
+
+  const tip = document.getElementById('tooltip');
+  function showTip(e){
+    tip.textContent = p.guest_name + ' planted a ' + p.plant_name;
+    tip.style.display = 'block';
+    const ex = e.clientX||(e.touches&&e.touches[0].clientX)||0;
+    const ey = e.clientY||(e.touches&&e.touches[0].clientY)||0;
+    tip.style.left = ex+14+'px';
+    tip.style.top = ey-10+'px';
+  }
+  function hideTip(){ tip.style.display='none'; }
+  el.addEventListener('mouseenter',showTip);
+  el.addEventListener('mousemove',showTip);
+  el.addEventListener('mouseleave',hideTip);
+  el.addEventListener('touchstart',showTip,{passive:true});
+  el.addEventListener('touchend',hideTip);
+  field.appendChild(el);
 }
 
 /* ---- place plant ---- */
 document.getElementById('plantBtn').addEventListener('click', async () => {
   const name = document.getElementById('guestName').value.trim();
-  if(!name || !selectedPlant) return;
+  if(!name || !selectedPlant || !selectedSection) return;
 
-  // plants live on the hill (y 42-85%)
   const xPct = 5 + Math.random() * 90;
   const yPct = 42 + Math.random() * 43;
 
@@ -265,49 +424,33 @@ document.getElementById('plantBtn').addEventListener('click', async () => {
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
-      body: JSON.stringify({ guest_name: name, plant_emoji: selectedPlant.emoji, plant_name: selectedPlant.name, x_pct: xPct, y_pct: yPct })
+      body: JSON.stringify({
+        guest_name: name,
+        plant_emoji: selectedPlant.emoji,
+        plant_name: selectedPlant.name,
+        x_pct: xPct,
+        y_pct: yPct,
+        section_id: selectedSection.id
+      })
     });
     if(!res.ok) throw new Error();
     const [row] = await res.json();
-    renderPlant(row);
+    allPlants.push(row);
+
+    // switch to the section they planted in
+    activeSection = selectedSection.id;
+    buildTabs();
+    renderSection(activeSection);
+
     localStorage.setItem('gardenPlanted', 'true');
     localStorage.setItem('gardenName', name);
-    document.getElementById('pickStatus').textContent = 'Planted! Thank you, ' + name + ' \uD83C\uDF31';
-    updateCount();
-    setTimeout(() => { document.querySelector('.picker-wrap').style.display = 'none'; }, 1800);
+    document.getElementById('pickStatus').textContent = 'Planted in ' + selectedSection.name + '! Thank you, ' + name + ' \uD83C\uDF31';
+    setTimeout(() => { document.getElementById('pickerWrap').style.display = 'none'; }, 1800);
   } catch(e) {
     document.getElementById('pickStatus').textContent = 'Something went wrong. Try again.';
     btn.disabled = false;
   }
 });
-
-/* ---- render plant ---- */
-function renderPlant(p) {
-  const field = document.getElementById('gardenField');
-  const el = document.createElement('div');
-  el.className = 'planted';
-  el.style.left = p.x_pct + '%';
-  el.style.top = p.y_pct + '%';
-  el.innerHTML = `<span class="emoji">${p.plant_emoji}</span><span class="pname">${p.guest_name}</span>`;
-
-  const tip = document.getElementById('tooltip');
-  function showTip(e){
-    tip.textContent = p.guest_name + ' planted a ' + p.plant_name;
-    tip.style.display = 'block';
-    const ex = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    const ey = e.clientY || (e.touches && e.touches[0].clientY) || 0;
-    tip.style.left = ex + 14 + 'px';
-    tip.style.top = ey - 10 + 'px';
-  }
-  function hideTip(){ tip.style.display = 'none'; }
-  el.addEventListener('mouseenter', showTip);
-  el.addEventListener('mousemove', showTip);
-  el.addEventListener('mouseleave', hideTip);
-  el.addEventListener('touchstart', showTip, {passive:true});
-  el.addEventListener('touchend', hideTip);
-
-  field.appendChild(el);
-}
 
 /* ---- load plants ---- */
 async function loadPlants(){
@@ -315,26 +458,21 @@ async function loadPlants(){
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
   });
   if(!res.ok) return;
-  const plants = await res.json();
-  plants.forEach(p => renderPlant(p));
-  updateCount(plants.length);
+  allPlants = await res.json();
+  buildTabs();
+  renderSection(activeSection);
 
   if(hasPlanted){
     const savedName = localStorage.getItem('gardenName');
-    document.querySelector('.picker-wrap').style.display = 'none';
+    document.getElementById('pickerWrap').style.display = 'none';
     if(savedName){
       document.getElementById('pickStatus').textContent = 'You already planted, ' + savedName + ' \uD83C\uDF31';
-      document.querySelector('.picker-wrap').style.display = 'block';
+      document.getElementById('pickerWrap').style.display = 'block';
       document.getElementById('plantBtn').style.display = 'none';
       document.getElementById('guestName').disabled = true;
-      document.querySelectorAll('.plant-opt').forEach(el => el.style.pointerEvents = 'none');
+      document.querySelectorAll('.section-opt,.plant-opt').forEach(el => el.style.pointerEvents = 'none');
     }
   }
-}
-
-function updateCount(n){
-  const count = n !== undefined ? n : document.querySelectorAll('.planted').length;
-  document.getElementById('gardenCount').textContent = count ? `${count} plant${count===1?'':'s'} growing` : '';
 }
 
 loadPlants();
