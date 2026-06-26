@@ -474,6 +474,39 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   divider.addEventListener('contextmenu', e => e.preventDefault());
 })();
 
+/* ---- Easter egg: shake phone to play Wordle ---- */
+(function(){
+  let lastX, lastY, lastZ;
+  let lastTime = 0;
+  const THRESHOLD = 15;
+  const COOLDOWN = 5000;
+  let triggered = false;
+
+  if(!window.DeviceMotionEvent) return;
+
+  window.addEventListener('devicemotion', function(e){
+    const acc = e.accelerationIncludingGravity;
+    if(!acc) return;
+    const now = Date.now();
+    if(now - lastTime < 100) return;
+    lastTime = now;
+
+    if(lastX === undefined){ lastX=acc.x; lastY=acc.y; lastZ=acc.z; return; }
+
+    const delta = Math.abs(acc.x-lastX) + Math.abs(acc.y-lastY) + Math.abs(acc.z-lastZ);
+    lastX=acc.x; lastY=acc.y; lastZ=acc.z;
+
+    if(delta > THRESHOLD && !triggered && now - (window._lastWordle||0) > COOLDOWN){
+      triggered = true;
+      window._lastWordle = now;
+      setTimeout(()=>triggered=false, 1000);
+      if(confirm('Feeling lucky? \n\nPlay Shwamie\u2019s Wordle?')){
+        window.location.href = '/wordle.html';
+      }
+    }
+  });
+})();
+
 </script>
 </body>
 </html>
