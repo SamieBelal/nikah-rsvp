@@ -53,14 +53,14 @@
     background:linear-gradient(
       to bottom,
       #f5e6d0 0%,
-      #f0d4b0 25%,
-      #e8c99a 40%,
-      #d4a574 52%,
-      /* rolling hill */
-      #8faa7a 52%,
-      #7a9668 58%,
-      #6b8a5a 65%,
-      #5a7a4a 72%,
+      #f0d4b0 18%,
+      #e8c99a 30%,
+      #d4a574 38%,
+      /* rolling hill starts at 38% */
+      #8faa7a 38%,
+      #7a9668 45%,
+      #6b8a5a 55%,
+      #5a7a4a 70%,
       #4e6e40 100%
     );
   }
@@ -182,9 +182,9 @@
   <div class="garden-count" id="gardenCount"></div>
   <div class="garden-field" id="gardenField">
     <!-- rolling hill SVG -->
-    <svg class="hill-svg" viewBox="0 0 700 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 80 Q100 40 200 65 Q320 90 420 50 Q520 20 700 60 L700 120 L0 120 Z" fill="#4e6e40" opacity=".6"/>
-      <path d="M0 95 Q150 65 280 80 Q400 95 500 70 Q600 50 700 75 L700 120 L0 120 Z" fill="#3d5a32" opacity=".5"/>
+    <svg class="hill-svg" viewBox="0 0 700 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 40 Q100 20 200 35 Q320 50 420 25 Q520 10 700 30 L700 80 L0 80 Z" fill="#4e6e40" opacity=".5"/>
+      <path d="M0 55 Q150 35 280 48 Q400 60 500 38 Q600 22 700 45 L700 80 L0 80 Z" fill="#3d5a32" opacity=".4"/>
     </svg>
   </div>
 </div>
@@ -215,7 +215,7 @@ let hasPlanted = localStorage.getItem('gardenPlanted') === 'true';
     const s = document.createElement('div');
     s.className = 'star';
     s.style.left = (Math.random()*90+5)+'%';
-    s.style.top = (Math.random()*42+2)+'%';
+    s.style.top = (Math.random()*32+2)+'%';
     s.style.opacity = (Math.random()*.5+.2).toFixed(2);
     s.style.width = s.style.height = (Math.random()*2+1)+'px';
     field.appendChild(s);
@@ -248,9 +248,9 @@ document.getElementById('plantBtn').addEventListener('click', async () => {
   const name = document.getElementById('guestName').value.trim();
   if(!name || !selectedPlant) return;
 
-  // plants live in lower 55% of field (on the hill)
+  // plants live on the hill (y 42-85%)
   const xPct = 5 + Math.random() * 90;
-  const yPct = 45 + Math.random() * 48;
+  const yPct = 42 + Math.random() * 43;
 
   const btn = document.getElementById('plantBtn');
   btn.disabled = true;
