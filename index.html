@@ -474,44 +474,60 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   divider.addEventListener('contextmenu', e => e.preventDefault());
 })();
 
-/* ---- Easter egg: shake phone to play Wordle ---- */
+
+
+/* ---- Easter egg: draw a circle to play Wordle ---- */
 (function(){
-  let lastX, lastY, lastZ, lastTime=0;
-  const THRESHOLD=15, COOLDOWN=5000;
-  let triggered=false, listening=false;
+  const POINTS = [];
+  const MAX_POINTS = 100;
+  let cooldown = false;
 
-  function startListening(){
-    if(listening) return;
-    listening=true;
-    window.addEventListener('devicemotion',function(e){
-      const acc=e.accelerationIncludingGravity;
-      if(!acc) return;
-      const now=Date.now();
-      if(now-lastTime<100) return;
-      lastTime=now;
-      if(lastX===undefined){lastX=acc.x;lastY=acc.y;lastZ=acc.z;return;}
-      const delta=Math.abs(acc.x-lastX)+Math.abs(acc.y-lastY)+Math.abs(acc.z-lastZ);
-      lastX=acc.x;lastY=acc.y;lastZ=acc.z;
-      if(delta>THRESHOLD&&!triggered&&now-(window._lastWordle||0)>COOLDOWN){
-        triggered=true;window._lastWordle=now;
-        setTimeout(()=>triggered=false,1000);
-        if(confirm('Feeling lucky? \n\nPlay Shwamie\u2019s Wordle?')){
-          window.location.href='/wordle.html';
-        }
+  document.addEventListener('touchmove', function(e){
+    const t = e.touches[0];
+    POINTS.push({x: t.clientX, y: t.clientY});
+    if(POINTS.length > MAX_POINTS) POINTS.shift();
+  }, {passive: true});
+
+  document.addEventListener('touchend', function(){
+    if(cooldown || POINTS.length < 20) { POINTS.length=0; return; }
+    if(isCircle(POINTS)){
+      POINTS.length = 0;
+      cooldown = true;
+      setTimeout(()=>cooldown=false, 5000);
+      if(confirm('You drew a circle! \n\nPlay Shwamie\u2019s Wordle?')){
+        window.location.href = '/wordle.html';
       }
-    });
-  }
+    } else {
+      POINTS.length = 0;
+    }
+  });
 
-  if(!window.DeviceMotionEvent) return;
-  if(typeof DeviceMotionEvent.requestPermission==='function'){
-    document.addEventListener('click',function ask(){
-      DeviceMotionEvent.requestPermission().then(s=>{ if(s==='granted') startListening(); }).catch(()=>{});
-    });
-  } else {
-    startListening();
-  }
-})()
+  function isCircle(pts){
+    // find centroid
+    let cx=0, cy=0;
+    pts.forEach(p=>{ cx+=p.x; cy+=p.y; });
+    cx/=pts.length; cy/=pts.length;
 
+    // average radius
+    let radii = pts.map(p=>Math.hypot(p.x-cx, p.y-cy));
+    let avgR = radii.reduce((a,b)=>a+b,0)/radii.length;
+
+    // radius must be big enough
+    if(avgR < 30) return false;
+
+    // check radius consistency (std dev < 35% of avg)
+    let variance = radii.reduce((a,b)=>a+Math.pow(b-avgR,2),0)/radii.length;
+    let stdDev = Math.sqrt(variance);
+    if(stdDev/avgR > 0.35) return false;
+
+    // check angular coverage (must cover ~270+ degrees)
+    let angles = pts.map(p=>Math.atan2(p.y-cy, p.x-cx));
+    let covered = new Set(angles.map(a=>Math.round((a+Math.PI)*(8/Math.PI))));
+    if(covered.size < 12) return false;
+
+    return true;
+  }
+})();
 </script>
 </body>
 </html>
