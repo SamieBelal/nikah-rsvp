@@ -414,6 +414,7 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
 /* ===== SUPABASE CONFIG — paste your two values from Settings -> API ===== */
 const SUPABASE_URL='https://byvjwxnhcqjhkuqofenv.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
+/* voice-notes bucket + voice_notes table must exist in the above project   */
 /* ======================================================================= */
 async function saveRSVP(entry){
   const res=await fetch(SUPABASE_URL+'/rest/v1/rsvps',{
