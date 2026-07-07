@@ -308,7 +308,8 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
     recorder.onstop=function(){
       audioDuration=30-secondsLeft;
       audioBlob=new Blob(chunks, {type:recorder.mimeType});
-      console.log('Recording MIME:',recorder.mimeType,'Blob type:',audioBlob.type,'Size:',audioBlob.size);
+      console.log('Recording MIME:',recorder.mimeType,'Blob type:',audioBlob.type,'Size:',audioBlob.size,'Chunks:',chunks.length);
+      alert('MIME='+recorder.mimeType+' Size='+audioBlob.size+' Chunks='+chunks.length);
       var url=URL.createObjectURL(audioBlob);
       preview.src=url;
       playback.style.display='block';
