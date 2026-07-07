@@ -271,6 +271,146 @@ function goForm(){document.getElementById('page1').classList.remove('active');do
 function goInvite(){document.getElementById('page2').classList.remove('active');document.getElementById('page1').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function goVoice(){document.getElementById('page1').classList.remove('active');document.getElementById('page3').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function goInviteFromVoice(){document.getElementById('page3').classList.remove('active');document.getElementById('page1').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+/* ============ VOICE NOTE RECORDING ============ */
+(function(){
+  var stream=null, recorder=null, chunks=[], audioBlob=null, audioDuration=0;
+  var timerInterval=null, secondsLeft=30;
+
+  var recBtn=null, recLabel=null, recTimer=null, playback=null, preview=null, submitBtn=null, nameInput=null;
+
+  function initEls(){
+    recBtn=document.getElementById('recBtn');
+    recLabel=document.getElementById('recLabel');
+    recTimer=document.getElementById('recTimer');
+    playback=document.getElementById('playback');
+    preview=document.getElementById('audioPreview');
+    submitBtn=document.getElementById('voiceSubmit');
+    nameInput=document.getElementById('voiceName');
+  }
+
+  function fmtTime(s){ return '0:'+String(s).padStart(2,'0'); }
+
+  async function startRecording(){
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    }catch(e){
+      alert('Microphone access is needed to record a voice note.');
+      return;
+    }
+    var mimeType='audio/webm;codecs=opus';
+    if(!MediaRecorder.isTypeSupported(mimeType)){
+      mimeType='audio/mp4';
+      if(!MediaRecorder.isTypeSupported(mimeType)) mimeType='';
+    }
+    chunks=[];
+    recorder=new MediaRecorder(stream, mimeType?{mimeType:mimeType}:{});
+    recorder.ondataavailable=function(e){ if(e.data.size>0) chunks.push(e.data); };
+    recorder.onstop=function(){
+      audioDuration=30-secondsLeft;
+      audioBlob=new Blob(chunks, {type:recorder.mimeType});
+      var url=URL.createObjectURL(audioBlob);
+      preview.src=url;
+      playback.style.display='block';
+      submitBtn.disabled=!nameInput.value.trim();
+      recBtn.style.display='none';
+      recLabel.textContent='Recording complete';
+      recTimer.textContent=fmtTime(audioDuration);
+      stopStream();
+    };
+    secondsLeft=30;
+    recTimer.textContent=fmtTime(secondsLeft);
+    recorder.start();
+    recBtn.classList.add('recording');
+    recLabel.textContent='Tap to Stop';
+    timerInterval=setInterval(function(){
+      secondsLeft--;
+      recTimer.textContent=fmtTime(secondsLeft);
+      if(secondsLeft<=0){ clearInterval(timerInterval); recorder.stop(); }
+    },1000);
+  }
+
+  function stopRecording(){
+    clearInterval(timerInterval);
+    if(recorder && recorder.state==='recording') recorder.stop();
+  }
+
+  function stopStream(){
+    if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; }
+  }
+
+  function resetRecorder(){
+    audioBlob=null; audioDuration=0; chunks=[];
+    playback.style.display='none';
+    preview.src='';
+    recBtn.style.display='flex';
+    recBtn.classList.remove('recording');
+    recLabel.textContent='Tap to Record';
+    recTimer.textContent='0:30';
+    submitBtn.disabled=true;
+    stopStream();
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    initEls();
+    recBtn.addEventListener('click',function(){
+      if(recorder && recorder.state==='recording') stopRecording();
+      else startRecording();
+    });
+    document.getElementById('reRecord').addEventListener('click',resetRecorder);
+    nameInput.addEventListener('input',function(){
+      if(audioBlob) submitBtn.disabled=!nameInput.value.trim();
+    });
+
+    submitBtn.addEventListener('click',async function(){
+      if(!audioBlob||!nameInput.value.trim()) return;
+      submitBtn.disabled=true; submitBtn.textContent='Sending\u2026';
+      try{
+        var ext=audioBlob.type.indexOf('mp4')!==-1?'.mp4':'.webm';
+        var fileName=crypto.randomUUID()+ext;
+        var filePath=fileName;
+
+        /* Upload to storage */
+        var upRes=await fetch(SUPABASE_URL+'/storage/v1/object/voice-notes/'+fileName,{
+          method:'POST',
+          headers:{
+            'apikey':SUPABASE_ANON_KEY,
+            'Authorization':'Bearer '+SUPABASE_ANON_KEY,
+            'Content-Type':audioBlob.type
+          },
+          body:audioBlob
+        });
+        if(!upRes.ok) throw new Error('Upload failed: '+upRes.status);
+
+        /* Insert metadata */
+        var metaRes=await fetch(SUPABASE_URL+'/rest/v1/voice_notes',{
+          method:'POST',
+          headers:{
+            'apikey':SUPABASE_ANON_KEY,
+            'Authorization':'Bearer '+SUPABASE_ANON_KEY,
+            'Content-Type':'application/json',
+            'Prefer':'return=minimal'
+          },
+          body:JSON.stringify({name:nameInput.value.trim(),file_path:filePath,duration:audioDuration})
+        });
+        if(!metaRes.ok) throw new Error('Metadata save failed: '+metaRes.status);
+
+        document.getElementById('voiceForm').style.display='none';
+        document.getElementById('voiceConfirm').style.display='block';
+      }catch(err){
+        alert('Something went wrong. Please try again.');
+        submitBtn.disabled=false; submitBtn.textContent='Send Voice Note';
+      }
+    });
+
+    document.getElementById('voiceAgain').addEventListener('click',function(){
+      resetRecorder();
+      nameInput.value='';
+      document.getElementById('voiceForm').style.display='block';
+      document.getElementById('voiceConfirm').style.display='none';
+      submitBtn.textContent='Send Voice Note';
+    });
+  });
+})();
 /* ===== SUPABASE CONFIG — paste your two values from Settings -> API ===== */
 const SUPABASE_URL='https://byvjwxnhcqjhkuqofenv.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
