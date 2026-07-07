@@ -57,6 +57,39 @@
   .save{font-family:'Tangerine',cursive;font-weight:700;color:var(--gold);font-size:clamp(2.8rem,9vw,4rem);line-height:.8;margin:22px 0 32px}
   .rsvp-btn{display:inline-block;background:var(--sage-deep);color:var(--paper);border:none;padding:16px 56px;cursor:pointer;font-family:'Cormorant Garamond','Hoefler Text',Georgia,serif;font-size:1rem;font-weight:600;text-transform:uppercase;letter-spacing:4px;border-radius:2px;transition:background .25s,transform .25s;box-shadow:0 12px 26px -12px rgba(54,64,44,.8)}
   .rsvp-btn:hover{background:#3d4733;transform:translateY(-2px)}
+  .voice-btn{display:inline-flex;flex-direction:column;align-items:center;gap:8px;margin-top:22px;background:none;border:none;cursor:pointer;color:var(--gold);transition:color .2s,transform .2s}
+  .voice-btn:hover{color:var(--gold-light);transform:translateY(-2px)}
+  .voice-btn svg{width:38px;height:38px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .voice-btn span{font-family:'Cormorant Garamond','Hoefler Text',Georgia,serif;font-size:.92rem;font-style:italic;letter-spacing:.5px}
+  /* PAGE 3 — VOICE NOTE */
+  .voice-wrap{max-width:420px;margin:0 auto;padding:40px 20px;text-align:center}
+  .voice-wrap h2{font-family:'Cormorant Garamond',serif;font-weight:500;color:var(--ink);font-size:1.6rem;margin-bottom:6px}
+  .voice-wrap .subtitle{font-style:italic;color:var(--sage);font-size:1rem;margin-bottom:28px}
+  .voice-wrap .field{text-align:left;margin-bottom:22px}
+  .voice-wrap .field label{display:block;font-size:.82rem;text-transform:uppercase;letter-spacing:2.5px;color:var(--sage);margin-bottom:6px;font-weight:500}
+  .voice-wrap .field input{width:100%;background:rgba(255,255,255,.55);border:none;border-bottom:1.5px solid var(--line);padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:1.16rem;color:var(--ink);outline:none;transition:border-color .25s}
+  .voice-wrap .field input:focus{border-color:var(--gold)}
+  .rec-btn{width:80px;height:80px;border-radius:50%;border:3px solid var(--gold);background:rgba(255,255,255,.55);cursor:pointer;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;transition:all .3s;position:relative}
+  .rec-btn svg{width:28px;height:28px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .rec-btn.recording{border-color:#c0392b;animation:pulse-ring 1.4s ease infinite}
+  .rec-btn.recording svg{stroke:#c0392b}
+  @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(192,57,43,.35)}70%{box-shadow:0 0 0 14px rgba(192,57,43,0)}100%{box-shadow:0 0 0 0 rgba(192,57,43,0)}}
+  .rec-label{font-size:.88rem;color:var(--sage);font-style:italic;margin-bottom:6px}
+  .rec-timer{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--ink);font-weight:500;margin-bottom:20px;letter-spacing:1px}
+  .playback{display:none;margin:20px 0}
+  .playback audio{width:100%;margin-bottom:14px}
+  .playback-btns{display:flex;gap:10px;justify-content:center}
+  .re-record{background:none;border:1.5px solid var(--line);color:var(--sage-text);padding:12px 24px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:1rem;letter-spacing:1px;border-radius:2px;transition:all .2s}
+  .re-record:hover{border-color:var(--sage)}
+  .voice-submit{display:block;width:100%;margin-top:14px;background:var(--gold);color:#fff;border:none;padding:16px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:1.04rem;font-weight:600;text-transform:uppercase;letter-spacing:3px;transition:background .25s;border-radius:2px}
+  .voice-submit:hover{background:var(--gold-light)}
+  .voice-submit:disabled{opacity:.5;cursor:default}
+  .voice-confirm{display:none;text-align:center;padding:40px 20px}
+  .voice-confirm h3{font-family:'Cormorant Garamond',serif;font-weight:500;color:var(--ink);font-size:1.5rem;margin-bottom:10px}
+  .voice-confirm p{color:var(--sage);font-style:italic;font-size:1.05rem;margin-bottom:24px}
+  .voice-again{background:none;border:1.5px solid var(--line);color:var(--sage-text);padding:12px 24px;cursor:pointer;font-family:'Cormorant Garamond',serif;font-size:.95rem;letter-spacing:1px;border-radius:2px;margin-right:10px;transition:all .2s}
+  .voice-again:hover{border-color:var(--sage)}
+  .voice-back{background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--sage);font-size:.95rem;text-decoration:underline}
   .rsvp-cap{display:block;margin-top:20px;font-style:italic;color:var(--sage);font-size:1rem}
 
   /* PAGE 2 */
@@ -162,6 +195,10 @@
         <button class="rsvp-btn" onclick="goForm()">RSVP</button>
         <span class="rsvp-cap">Kindly respond by August 1st</span>
         <a href="/photos.html" class="maplink" style="display:block;margin-top:18px">Share &amp; View Wedding Photos</a>
+        <button class="voice-btn" onclick="goVoice()">
+          <svg viewBox="0 0 48 48"><path d="M12 4h24a4 4 0 0 1 4 4v32a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"/><circle cx="24" cy="30" r="8"/><circle cx="24" cy="30" r="3"/><path d="M16 12h16v6H16z"/><circle cx="13" cy="15" r="1.2"/><circle cx="35" cy="15" r="1.2"/></svg>
+          <span>Leave a Voice Note</span>
+        </button>
       </div>
     </div>
   </div>
@@ -197,12 +234,43 @@
       </section>
     </div>
   </div>
+
+  <div class="page" id="page3">
+    <div class="card" style="position:relative">
+      <button class="back" onclick="goInviteFromVoice()">&#8592; Invitation</button>
+      <div class="voice-wrap" id="voiceForm">
+        <h2>Leave a Voice Note</h2>
+        <p class="subtitle">Record a message for Faizah &amp; Samie</p>
+        <div class="field"><label>Your Name</label><input type="text" id="voiceName" required placeholder="Your name"></div>
+        <div class="rec-label" id="recLabel">Tap to Record</div>
+        <button class="rec-btn" id="recBtn" type="button">
+          <svg viewBox="0 0 24 24"><path d="M12 1a4 4 0 0 0-4 4v6a4 4 0 0 0 8 0V5a4 4 0 0 0-4-4z"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="18" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        </button>
+        <div class="rec-timer" id="recTimer">0:30</div>
+        <div class="playback" id="playback">
+          <audio id="audioPreview" controls></audio>
+          <div class="playback-btns">
+            <button class="re-record" id="reRecord">Re-record</button>
+          </div>
+        </div>
+        <button class="voice-submit" id="voiceSubmit" disabled>Send Voice Note</button>
+      </div>
+      <div class="voice-confirm" id="voiceConfirm">
+        <h3>Thank You!</h3>
+        <p>Your voice note has been saved.</p>
+        <button class="voice-again" id="voiceAgain">Record Another</button>
+        <button class="voice-back" onclick="goInviteFromVoice()">Back to Invitation</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 
 <script>
 function goForm(){document.getElementById('page1').classList.remove('active');document.getElementById('page2').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 function goInvite(){document.getElementById('page2').classList.remove('active');document.getElementById('page1').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function goVoice(){document.getElementById('page1').classList.remove('active');document.getElementById('page3').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
+function goInviteFromVoice(){document.getElementById('page3').classList.remove('active');document.getElementById('page1').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 /* ===== SUPABASE CONFIG — paste your two values from Settings -> API ===== */
 const SUPABASE_URL='https://byvjwxnhcqjhkuqofenv.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
