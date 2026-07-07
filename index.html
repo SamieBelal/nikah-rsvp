@@ -366,7 +366,7 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
       if(!audioBlob||!nameInput.value.trim()) return;
       submitBtn.disabled=true; submitBtn.textContent='Sending\u2026';
       try{
-        var ext=audioBlob.type.indexOf('mp4')!==-1?'.mp4':'.webm';
+        var ext=audioBlob.type.indexOf('webm')!==-1?'.webm':'.mp4';
         var fileName=crypto.randomUUID()+ext;
         var filePath=fileName;
 

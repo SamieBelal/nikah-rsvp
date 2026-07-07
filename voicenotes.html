@@ -78,7 +78,7 @@ async function load(){
           '<span class="note-name">'+n.name.replace(/</g,'&lt;')+'</span>'+
           '<span class="note-meta">'+fmtDuration(n.duration)+' &middot; '+fmtDate(n.created_at)+'</span>'+
         '</div>'+
-        '<audio controls preload="none" src="'+audioUrl+'"></audio>';
+        '<audio controls preload="none"><source src="'+audioUrl+'" type="'+(n.file_path.endsWith('.webm')?'audio/webm':'audio/mp4')+'"><source src="'+audioUrl+'" type="audio/mp4"><source src="'+audioUrl+'" type="audio/webm"></audio>';
       list.appendChild(div);
     });
   }catch(e){
