@@ -339,6 +339,7 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
   }
 
   function resetRecorder(){
+    if(preview.src && preview.src.startsWith('blob:')) URL.revokeObjectURL(preview.src);
     audioBlob=null; audioDuration=0; chunks=[];
     playback.style.display='none';
     preview.src='';
