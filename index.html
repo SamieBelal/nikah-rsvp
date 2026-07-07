@@ -309,7 +309,6 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
       audioDuration=30-secondsLeft;
       audioBlob=new Blob(chunks, {type:recorder.mimeType});
       console.log('Recording MIME:',recorder.mimeType,'Blob type:',audioBlob.type,'Size:',audioBlob.size);
-      alert('Debug: MIME='+recorder.mimeType+' Size='+audioBlob.size);
       var url=URL.createObjectURL(audioBlob);
       preview.src=url;
       playback.style.display='block';
@@ -321,7 +320,7 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
     };
     secondsLeft=30;
     recTimer.textContent=fmtTime(secondsLeft);
-    recorder.start();
+    recorder.start(1000);
     recBtn.classList.add('recording');
     recLabel.textContent='Tap to Stop';
     timerInterval=setInterval(function(){
