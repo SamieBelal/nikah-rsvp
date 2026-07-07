@@ -273,7 +273,8 @@ function goVoice(){document.getElementById('page1').classList.remove('active');d
 function goInviteFromVoice(){document.getElementById('page3').classList.remove('active');document.getElementById('page1').classList.add('active');window.scrollTo({top:0,behavior:'smooth'});}
 /* ============ VOICE NOTE RECORDING ============ */
 (function(){
-  var stream=null, recorder=null, chunks=[], audioBlob=null, audioDuration=0;
+  var stream=null, audioCtx=null, sourceNode=null, processorNode=null;
+  var audioBlob=null, audioDuration=0, pcmChunks=[];
   var timerInterval=null, secondsLeft=30;
 
   var recBtn=null, recLabel=null, recTimer=null, playback=null, preview=null, submitBtn=null, nameInput=null;
@@ -290,6 +291,33 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
 
   function fmtTime(s){ return '0:'+String(s).padStart(2,'0'); }
 
+  function encodeWAV(samples, sampleRate){
+    var len=samples.length;
+    var buf=new ArrayBuffer(44+len*2);
+    var view=new DataView(buf);
+    function writeStr(o,s){for(var i=0;i<s.length;i++) view.setUint8(o+i,s.charCodeAt(i));}
+    writeStr(0,'RIFF');
+    view.setUint32(4,36+len*2,true);
+    writeStr(8,'WAVE');
+    writeStr(12,'fmt ');
+    view.setUint32(16,16,true);
+    view.setUint16(20,1,true);
+    view.setUint16(22,1,true);
+    view.setUint32(24,sampleRate,true);
+    view.setUint32(28,sampleRate*2,true);
+    view.setUint16(32,2,true);
+    view.setUint16(34,16,true);
+    writeStr(36,'data');
+    view.setUint32(40,len*2,true);
+    for(var i=0;i<len;i++){
+      var s=Math.max(-1,Math.min(1,samples[i]));
+      view.setInt16(44+i*2,s<0?s*0x8000:s*0x7FFF,true);
+    }
+    return new Blob([buf],{type:'audio/wav'});
+  }
+
+  var isRecording=false;
+
   async function startRecording(){
     try{
       stream=await navigator.mediaDevices.getUserMedia({audio:true});
@@ -297,43 +325,55 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
       alert('Microphone access is needed to record a voice note.');
       return;
     }
-    var mimeType='audio/webm;codecs=opus';
-    if(!MediaRecorder.isTypeSupported(mimeType)){
-      mimeType='audio/mp4';
-      if(!MediaRecorder.isTypeSupported(mimeType)) mimeType='';
-    }
-    chunks=[];
-    recorder=new MediaRecorder(stream, mimeType?{mimeType:mimeType}:{});
-    recorder.ondataavailable=function(e){ if(e.data.size>0) chunks.push(e.data); };
-    recorder.onstop=function(){
-      audioDuration=30-secondsLeft;
-      audioBlob=new Blob(chunks, {type:recorder.mimeType});
-      console.log('Recording MIME:',recorder.mimeType,'Blob type:',audioBlob.type,'Size:',audioBlob.size,'Chunks:',chunks.length);
-      alert('MIME='+recorder.mimeType+' Size='+audioBlob.size+' Chunks='+chunks.length);
-      var url=URL.createObjectURL(audioBlob);
-      preview.src=url;
-      playback.style.display='block';
-      submitBtn.disabled=!nameInput.value.trim();
-      recBtn.style.display='none';
-      recLabel.textContent='Recording complete';
-      recTimer.textContent=fmtTime(audioDuration);
-      stopStream();
+    audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    sourceNode=audioCtx.createMediaStreamSource(stream);
+    var bufSize=4096;
+    processorNode=audioCtx.createScriptProcessor(bufSize,1,1);
+    pcmChunks=[];
+    isRecording=true;
+    processorNode.onaudioprocess=function(e){
+      if(!isRecording) return;
+      var input=e.inputBuffer.getChannelData(0);
+      pcmChunks.push(new Float32Array(input));
     };
+    sourceNode.connect(processorNode);
+    processorNode.connect(audioCtx.destination);
     secondsLeft=30;
     recTimer.textContent=fmtTime(secondsLeft);
-    recorder.start(1000);
     recBtn.classList.add('recording');
     recLabel.textContent='Tap to Stop';
     timerInterval=setInterval(function(){
       secondsLeft--;
       recTimer.textContent=fmtTime(secondsLeft);
-      if(secondsLeft<=0){ clearInterval(timerInterval); recorder.stop(); }
+      if(secondsLeft<=0) stopRecording();
     },1000);
   }
 
   function stopRecording(){
     clearInterval(timerInterval);
-    if(recorder && recorder.state==='recording') recorder.stop();
+    isRecording=false;
+    if(processorNode){ processorNode.disconnect(); processorNode=null; }
+    if(sourceNode){ sourceNode.disconnect(); sourceNode=null; }
+    var sampleRate=audioCtx?audioCtx.sampleRate:44100;
+    if(audioCtx){ audioCtx.close(); audioCtx=null; }
+    stopStream();
+
+    audioDuration=30-secondsLeft;
+    var totalLen=0;
+    pcmChunks.forEach(function(c){totalLen+=c.length;});
+    var merged=new Float32Array(totalLen);
+    var offset=0;
+    pcmChunks.forEach(function(c){merged.set(c,offset);offset+=c.length;});
+    pcmChunks=[];
+
+    audioBlob=encodeWAV(merged,sampleRate);
+    var url=URL.createObjectURL(audioBlob);
+    preview.src=url;
+    playback.style.display='block';
+    submitBtn.disabled=!nameInput.value.trim();
+    recBtn.style.display='none';
+    recLabel.textContent='Recording complete';
+    recTimer.textContent=fmtTime(audioDuration);
   }
 
   function stopStream(){
@@ -368,7 +408,7 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
       if(!audioBlob||!nameInput.value.trim()) return;
       submitBtn.disabled=true; submitBtn.textContent='Sending\u2026';
       try{
-        var ext=audioBlob.type.indexOf('webm')!==-1?'.webm':'.mp4';
+        var ext='.wav';
         var fileName=crypto.randomUUID()+ext;
         var filePath=fileName;
 
