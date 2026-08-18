@@ -35,7 +35,7 @@
     border:1px solid var(--line);padding:60px 50px 56px;text-align:center;
     box-shadow:0 30px 70px -34px rgba(54,64,44,.55);
   }
-  .card::after{content:"";position:absolute;inset:8px;border:1px solid rgba(168,133,74,.28);pointer-events:none}
+  .card::after{content:"";position:absolute;inset:8px;border:1px solid rgba(168,133,74,.28);pointer-events:none;z-index:1}
 
   /* PAGE 1 */
   .bismillah{font-family:'Aref Ruqaa',serif;font-weight:700;color:var(--gold);font-size:clamp(1.5rem,5vw,2.2rem);line-height:1.5;margin:6px 0 26px;direction:rtl}
@@ -91,6 +91,22 @@
   .voice-again:hover{border-color:var(--sage)}
   .voice-back{background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--sage);font-size:.95rem;text-decoration:underline}
   .rsvp-cap{display:block;margin-top:20px;font-style:italic;color:var(--sage);font-size:1rem}
+  .itinerary{margin-top:28px;padding-top:22px;border-top:1px solid var(--line);text-align:center}
+  .itin-title{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;letter-spacing:2px;text-transform:uppercase;color:var(--sage-deep);text-align:center;margin-bottom:24px}
+  .itin-track{display:flex;flex-direction:column;align-items:center;gap:0;max-width:320px;margin:0 auto;position:relative}
+  .itin-step{display:grid;grid-template-columns:80px 32px 1fr;align-items:center;width:100%;position:relative;min-height:52px}
+  .itin-left{display:flex;flex-direction:column;align-items:flex-end;gap:2px;padding-right:10px}
+  .itin-time{font-size:.8rem;color:var(--gold);font-style:italic;letter-spacing:.3px;white-space:nowrap}
+  .itin-icon{display:flex;align-items:center;justify-content:center;color:var(--gold);position:relative;z-index:1}
+  .itin-icon svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .itin-right{padding-left:14px;border-left:1px solid rgba(168,133,74,.4);align-self:stretch;display:flex;align-items:center}
+  .itin-label{font-size:.88rem;color:var(--ink);line-height:1.4;text-align:left}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-around;align-items:center;background:rgba(245,242,234,0.97);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:100}
+  @media(min-width:600px){.bottom-nav{max-width:480px;left:50%;transform:translateX(-50%);border-radius:16px 16px 0 0;border-left:1px solid var(--line);border-right:1px solid var(--line)}}
+  .nav-icon{display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:var(--gold);transition:color .2s,transform .2s;-webkit-tap-highlight-color:transparent;flex:1}
+  .nav-icon:hover,.nav-icon:active{color:var(--gold-light);transform:translateY(-2px)}
+  .nav-icon svg{width:32px;height:32px}
+  .nav-icon span{font-family:'Cormorant Garamond','Hoefler Text',Georgia,serif;font-size:.7rem;font-style:italic;letter-spacing:.4px;color:var(--sage)}
 
   /* PAGE 2 */
   .back{position:absolute;top:18px;left:20px;z-index:5;background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond','Hoefler Text',Georgia,serif;font-style:italic;color:var(--sage);font-size:1rem}
@@ -191,14 +207,83 @@
         <div class="d tbd">Clinton Township, Michigan</div>
         <a class="maplink" href="https://www.google.com/maps/search/?api=1&amp;query=The+Mirage+Banquet+Center+16980+18+Mile+Rd+Clinton+Township+MI+48038" target="_blank" rel="noopener">View Map &amp; Directions</a>
       </div>
+
+      <div class="reveal itinerary" style="animation-delay:.72s">
+        <img src="itinerary.png" alt="Wedding Program" style="width:100%;max-width:420px;display:block;margin:0 auto;border-radius:4px"/>
+        <div class="itin-track" style="display:none">
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">6:00 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Guest Arrival &amp; Seating</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">7:00 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Family &amp; Couple Entrances</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">7:15 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Qur'an Recitation &amp; Opening Remarks</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">7:30 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Family Speeches</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">8:00 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"/><path d="M9 22V12h6v10M2 10.6L12 2l10 8.6"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Cake Cutting</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">8:15 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M8 8a4 4 0 0 0 8 0"/><path d="M12 12v4m-4 4h8"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="8" r="1" fill="currentColor" stroke="none"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Ring &amp; Flower Mala Exchange</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">8:30 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Dinner</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">9:15 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><circle cx="12" cy="13" r="3.5"/><circle cx="12" cy="13" r="1.2"/><path d="M14 6l1.5-3M10 6L8.5 3"/><circle cx="17" cy="9" r="1" fill="currentColor" stroke="none"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Family &amp; Guest Photographs</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">10:00 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Additional Speeches &amp; Open Floor</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">11:00 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Farewell &amp; Family Blessings</span></div>
+          </div>
+
+          <div class="itin-step">
+            <div class="itin-left"><span class="itin-time">11:15 PM</span></div>
+            <div class="itin-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="itin-right"><span class="itin-label">Couple's Exit</span></div>
+          </div>
+
+        </div>
+      </div>
+
       <div class="reveal" style="animation-delay:.8s;margin-top:30px">
         <button class="rsvp-btn" onclick="goForm()">RSVP</button>
         <span class="rsvp-cap">Kindly respond by August 1st</span>
-        <a href="/photos.html" class="maplink" style="display:block;margin-top:18px">Share &amp; View Wedding Photos</a>
-        <button class="voice-btn" onclick="goVoice()">
-          <svg viewBox="0 0 48 48"><path d="M12 4h24a4 4 0 0 1 4 4v32a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"/><circle cx="24" cy="30" r="8"/><circle cx="24" cy="30" r="3"/><path d="M16 12h16v6H16z"/><circle cx="13" cy="15" r="1.2"/><circle cx="35" cy="15" r="1.2"/></svg>
-          <span>Leave a Voice Note</span>
-        </button>
       </div>
     </div>
   </div>
@@ -396,7 +481,7 @@ function goInviteFromVoice(){document.getElementById('page3').classList.remove('
   document.addEventListener('DOMContentLoaded',function(){
     initEls();
     recBtn.addEventListener('click',function(){
-      if(recorder && recorder.state==='recording') stopRecording();
+      if(isRecording) stopRecording();
       else startRecording();
     });
     document.getElementById('reRecord').addEventListener('click',resetRecorder);
@@ -605,24 +690,6 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   }
   function close(){ overlay.classList.remove('open'); }
 
-  // long press on the names image (2s)
-  let pressTimer = null;
-  function bindLongPress(){
-    const img = document.querySelector('.title-img');
-    if(!img){ setTimeout(bindLongPress, 300); return; }
-    function startPress(e){ pressTimer = setTimeout(()=>{ e.preventDefault(); open(); }, 2000); }
-    function cancelPress(){ clearTimeout(pressTimer); }
-    img.addEventListener('mousedown', startPress);
-    img.addEventListener('touchstart', startPress, {passive:true});
-    img.addEventListener('mouseup', cancelPress);
-    img.addEventListener('mouseleave', cancelPress);
-    img.addEventListener('touchend', cancelPress);
-    img.addEventListener('touchcancel', cancelPress);
-    img.style.webkitUserSelect='none';
-    img.style.userSelect='none';
-    img.addEventListener('contextmenu', e=>e.preventDefault());
-  }
-  bindLongPress();
   overlay.addEventListener('click', e=>{ if(e.target===overlay) close(); });
 
   document.getElementById('gb-open-btn').addEventListener('click',()=>{
@@ -704,82 +771,42 @@ document.getElementById('rsvpForm').addEventListener('submit',async(e)=>{
   });
 })();
 
-/* ---- Garden easter egg: long press the divider ---- */
-(function(){
-  let pressTimer = null;
-  const divider = document.getElementById('gardenDivider');
-  if(!divider) return;
-  function startPress(){
-    pressTimer = setTimeout(() => {
-      if(confirm('You found our secret garden \n\nWould you like to plant something for Samie & Faizah?')){
-        window.location.href = '/garden.html';
-      }
-    }, 2000);
-  }
-  function cancelPress(){ clearTimeout(pressTimer); }
-  divider.addEventListener('mousedown', startPress);
-  divider.addEventListener('touchstart', startPress, {passive:true});
-  divider.addEventListener('mouseup', cancelPress);
-  divider.addEventListener('mouseleave', cancelPress);
-  divider.addEventListener('touchend', cancelPress);
-  divider.addEventListener('touchcancel', cancelPress);
-  divider.addEventListener('contextmenu', e => e.preventDefault());
-})();
 
 
 
-/* ---- Easter egg: draw a circle to play Wordle ---- */
-(function(){
-  const POINTS = [];
-  const MAX_POINTS = 100;
-  let cooldown = false;
-
-  document.addEventListener('touchmove', function(e){
-    const t = e.touches[0];
-    POINTS.push({x: t.clientX, y: t.clientY});
-    if(POINTS.length > MAX_POINTS) POINTS.shift();
-  }, {passive: true});
-
-  document.addEventListener('touchend', function(){
-    if(cooldown || POINTS.length < 20) { POINTS.length=0; return; }
-    if(isCircle(POINTS)){
-      POINTS.length = 0;
-      cooldown = true;
-      setTimeout(()=>cooldown=false, 5000);
-      if(confirm('You drew a circle! \n\nPlay Shwamie\u2019s Wordle?')){
-        window.location.href = '/wordle.html';
-      }
-    } else {
-      POINTS.length = 0;
-    }
-  });
-
-  function isCircle(pts){
-    // find centroid
-    let cx=0, cy=0;
-    pts.forEach(p=>{ cx+=p.x; cy+=p.y; });
-    cx/=pts.length; cy/=pts.length;
-
-    // average radius
-    let radii = pts.map(p=>Math.hypot(p.x-cx, p.y-cy));
-    let avgR = radii.reduce((a,b)=>a+b,0)/radii.length;
-
-    // radius must be big enough
-    if(avgR < 30) return false;
-
-    // check radius consistency (std dev < 35% of avg)
-    let variance = radii.reduce((a,b)=>a+Math.pow(b-avgR,2),0)/radii.length;
-    let stdDev = Math.sqrt(variance);
-    if(stdDev/avgR > 0.35) return false;
-
-    // check angular coverage (must cover ~270+ degrees)
-    let angles = pts.map(p=>Math.atan2(p.y-cy, p.x-cx));
-    let covered = new Set(angles.map(a=>Math.round((a+Math.PI)*(8/Math.PI))));
-    if(covered.size < 12) return false;
-
-    return true;
-  }
-})();
 </script>
+
+<nav class="bottom-nav">
+  <a href="#" onclick="goVoice();return false;" class="nav-icon">
+    <img src="icons/telephone.png" alt="Voice Note" style="width:32px;height:32px;object-fit:contain;filter:brightness(0) saturate(100%) invert(58%) sepia(30%) saturate(600%) hue-rotate(5deg) brightness(90%)"/>
+    <span>Voice Note</span>
+  </a>
+  <a href="drawings.html" class="nav-icon">
+    <img src="icons/palette.png" alt="Drawing" style="width:32px;height:32px;object-fit:contain;filter:brightness(0) saturate(100%) invert(58%) sepia(30%) saturate(600%) hue-rotate(5deg) brightness(90%)"/>
+    <span>Drawing</span>
+  </a>
+  <a href="photos.html" class="nav-icon">
+    <img src="icons/camera.png" alt="Photos" style="width:32px;height:32px;object-fit:contain;filter:brightness(0) saturate(100%) invert(58%) sepia(30%) saturate(600%) hue-rotate(5deg) brightness(90%)"/>
+    <span>Photos</span>
+  </a>
+  <a href="wordle.html" class="nav-icon">
+    <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="6" y="6" width="10" height="10" rx="1.5"/>
+      <rect x="19" y="6" width="10" height="10" rx="1.5"/>
+      <rect x="32" y="6" width="10" height="10" rx="1.5"/>
+      <rect x="6" y="19" width="10" height="10" rx="1.5"/>
+      <rect x="19" y="19" width="10" height="10" rx="1.5"/>
+      <rect x="32" y="19" width="10" height="10" rx="1.5"/>
+      <rect x="6" y="32" width="10" height="10" rx="1.5"/>
+      <rect x="19" y="32" width="10" height="10" rx="1.5"/>
+      <rect x="32" y="32" width="10" height="10" rx="1.5"/>
+    </svg>
+    <span>Wordle</span>
+  </a>
+  <a href="garden.html" class="nav-icon">
+    <img src="icons/flower.png" alt="Garden" style="width:32px;height:32px;object-fit:contain;filter:brightness(0) saturate(100%) invert(58%) sepia(30%) saturate(600%) hue-rotate(5deg) brightness(90%)"/>
+    <span>Garden</span>
+  </a>
+</nav>
 </body>
 </html>

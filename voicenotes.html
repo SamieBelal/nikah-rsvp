@@ -33,21 +33,54 @@
   .loading{text-align:center;padding:80px 20px;color:var(--sage);font-style:italic}
 </style>
 </head>
+<style>
+  .lock{position:fixed;inset:0;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;z-index:999}
+  .lock h2{font-family:'Allura',cursive;color:var(--sage-deep);font-size:2.4rem;font-weight:400}
+  .lock p{color:var(--sage);font-style:italic;font-size:.95rem}
+  .lock input{border:none;border-bottom:1px solid var(--line);background:transparent;padding:10px 4px;font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--ink);text-align:center;outline:none;width:180px;letter-spacing:2px}
+  .lock button{background:var(--sage-deep);color:#fff;border:none;padding:12px 36px;font-family:'Cormorant Garamond',serif;font-size:.95rem;letter-spacing:3px;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-top:4px}
+  .lock .err{color:#b04a4a;font-size:.85rem;font-style:italic;min-height:18px}
+</style>
+
 <body>
 
-<div class="header">
-  <h1>Voice Notes</h1>
-  <p>Messages from our loved ones</p>
-  <p class="count" id="count"></p>
+<div class="lock" id="lock">
+  <h2>Voice Notes</h2>
+  <p>This page is private</p>
+  <input type="password" id="pw" placeholder="enter password" autocomplete="off"/>
+  <div class="err" id="err"></div>
+  <button onclick="checkPw()">Enter</button>
 </div>
 
-<div class="list" id="list">
-  <p class="loading" id="loading">Loading voice notes&hellip;</p>
+<div id="main" style="display:none">
+  <div class="header">
+    <h1>Voice Notes</h1>
+    <p>Messages from our loved ones</p>
+    <p class="count" id="count"></p>
+  </div>
+  <div class="list" id="list">
+    <p class="loading" id="loading">Loading voice notes&hellip;</p>
+  </div>
 </div>
 
 <script>
 const SB_URL='https://byvjwxnhcqjhkuqofenv.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5dmp3eG5oY3FqaGt1cW9mZW52Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzMjc4OTcsImV4cCI6MjA5NzkwMzg5N30.QscMJ4dclX-u66ckAUFAyL7NQiCvVjtxK3mSAX9AR4M';
+
+// allow enter key to submit
+document.getElementById('pw').addEventListener('keydown',function(e){ if(e.key==='Enter') checkPw(); });
+
+function checkPw(){
+  var val=document.getElementById('pw').value;
+  if(val==='juju101'){
+    document.getElementById('lock').style.display='none';
+    document.getElementById('main').style.display='block';
+    load();
+  } else {
+    document.getElementById('err').textContent='Incorrect password';
+    document.getElementById('pw').value='';
+  }
+}
 
 function fmtDuration(s){return '0:'+String(s).padStart(2,'0');}
 function fmtDate(d){var dt=new Date(d);return dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}
@@ -85,8 +118,6 @@ async function load(){
     document.getElementById('loading').textContent='Failed to load voice notes.';
   }
 }
-
-load();
 </script>
 </body>
 </html>
